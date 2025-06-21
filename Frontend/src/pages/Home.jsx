@@ -6,7 +6,7 @@ import Separador from '../components/Separador';
 import Solucoes from '../components/Solucoes';
 import AboutUs from '../components/AboutUs';
 import Testimonial from '../components/Testimonial';
-import NewsLetter from '../components/NewsLetter';
+import NewsLetter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import RequestOrc from '../components/RequestOrc';
 
