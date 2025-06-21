@@ -2,9 +2,9 @@
 
 @import "tailwindcss";
 
-@theme {
-  -- color-primary: #2563eb;
-  -- color-secondary: #fbbf24;
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #fbbf24;
 }
 
 * {
@@ -15,7 +15,6 @@
   font-family: Playfair !important;
 }
 
-/* index.css */
 html, body, #root {
   margin: 0;
   padding: 0;
