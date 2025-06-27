@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
 
         <p className="pt-6 text-center text-xs md:text-sm pb-6">
-          © 2024 Kentacentro. All rights reserved.
+          © 2025 Kentacentro. All rights reserved.
         </p>
       </footer>
     </>
