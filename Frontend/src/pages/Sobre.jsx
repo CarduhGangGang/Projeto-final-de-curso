@@ -1,10 +1,10 @@
 import React from "react";
 import Hero from "../components/Sobre/Hero";
-import Nossahistoria from "../components/Sobre/NossaHistoria";
 import NossaVisao from "../components/Sobre/NossaVisao"; 
 import Oquefazemos from "../components/Sobre/Oquefazemos";
 import Connects from "../components/Sobre/Connects";
 import Footer from "../components/Footer";
+import Nossahistoria from "../components/Sobre/Nossahistoria";
 
 const Sobre = () => {
   return (

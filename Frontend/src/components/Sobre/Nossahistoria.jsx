@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const NossaHistoria = () => {
+const Nossahistoria = () => {
   return (
     <section className="bg-white px-6 py-16 md:py-24 text-center">
       <motion.div
@@ -28,4 +28,4 @@ const NossaHistoria = () => {
   );
 };
 
-export default NossaHistoria;
+export default Nossahistoria;
