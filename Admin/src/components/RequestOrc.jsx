@@ -45,49 +45,41 @@ const RequestOrc = ({ onClose, initialData = {} }) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8">
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex flex-col md:flex-row bg-white rounded-xl w-full max-w-4xl"
+        className="bg-white rounded-xl w-full max-w-2xl p-6 relative"
       >
         <img
-          src={assets.regImage}
-          alt="Imagem"
-          className="md:w-1/2 w-full object-cover rounded-t-xl md:rounded-l-xl md:rounded-tr-none hidden md:block"
+          src={assets.closeIcon}
+          alt="Fechar"
+          className="absolute top-3 right-3 h-4 w-4 cursor-pointer"
+          onClick={onClose}
         />
 
-        <div className="relative w-full md:w-1/2 p-6 text-sm">
-          <img
-            src={assets.closeIcon}
-            alt="Fechar"
-            className="absolute top-3 right-3 h-4 w-4 cursor-pointer"
-            onClick={onClose}
-          />
+        <p className="text-xl font-semibold mb-8 text-center">
+          {modalConfig?.titulo || 'Visualizar Pedido'}
+        </p>
 
-          <p className="text-xl font-semibold mb-8 text-center">
-            {modalConfig?.titulo || 'Visualizar Pedido'}
-          </p>
-
-          {['nome', 'email', 'contacto'].map((field) => (
-            <div key={field} className="w-full mb-4">
-              <label className="block font-medium text-gray-600 mb-1">
-                {field.charAt(0).toUpperCase() + field.slice(1)}
-              </label>
-              <div className="w-full px-2 py-1.5 rounded text-sm bg-green-100 text-green-800 border border-green-400">
-                {formData[field] || '—'}
-              </div>
-            </div>
-          ))}
-
-          <div className="w-full mb-4">
-            <label className="block font-medium text-gray-600 mb-1">Tipo de Serviço</label>
+        {['nome', 'email', 'contacto'].map((field) => (
+          <div key={field} className="w-full mb-4">
+            <label className="block font-medium text-gray-600 mb-1">
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+            </label>
             <div className="w-full px-2 py-1.5 rounded text-sm bg-green-100 text-green-800 border border-green-400">
-              {formData.tipoServico || '—'}
+              {formData[field] || '—'}
             </div>
           </div>
+        ))}
 
-          <div className="w-full mb-2">
-            <label className="block font-medium text-gray-600 mb-1">Mais detalhes</label>
-            <div className="w-full px-2 py-1.5 rounded text-sm bg-green-100 text-green-800 border border-green-400 whitespace-pre-line overflow-y-auto max-h-60">
-              {formData.detalhes || '—'}
-            </div>
+        <div className="w-full mb-4">
+          <label className="block font-medium text-gray-600 mb-1">Tipo de Serviço</label>
+          <div className="w-full px-2 py-1.5 rounded text-sm bg-green-100 text-green-800 border border-green-400">
+            {formData.tipoServico || '—'}
+          </div>
+        </div>
+
+        <div className="w-full mb-2">
+          <label className="block font-medium text-gray-600 mb-1">Mais detalhes</label>
+          <div className="w-full px-2 py-1.5 rounded text-sm bg-green-100 text-green-800 border border-green-400 whitespace-pre-line overflow-y-auto max-h-60">
+            {formData.detalhes || '—'}
           </div>
         </div>
       </form>

@@ -1,24 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-
-const testimonials = [
-  {
-    name: 'João Ferreira',
-    title: 'Proprietário de moradia em construção',
-    image: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=100',
-    message:
-      'Comprei o aquecimento da minha obra pela Kentacentro e o atendimento foi impecável. Entregaram tudo no prazo e com ótima qualidade.',
-    rating: 5,
-  },
-  {
-    name: 'Paulo Portas',
-    title: 'Proprietário de uma empresa',
-    image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100',
-    message:
-      'Quando precisei de assistência, bastou uma chamada e os técnicos apareceram no próprio dia — resolveram tudo num estalar de dedos!',
-    rating: 5,
-  },
-];
+import { supabase } from '../../supabase-client';
 
 const StarRating = ({ count }) => (
   <div className="flex mt-3 gap-1 justify-center">
@@ -48,15 +30,6 @@ const TestimonialCard = ({ name, title, image, message, rating, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 * index, duration: 0.6, ease: 'easeOut' }}
     >
-      <svg
-        width="44"
-        height="40"
-        viewBox="0 0 44 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="..." fill="#2563EB" />
-      </svg>
       <StarRating count={rating} />
       <p className="text-sm mt-3 text-gray-500">{message}</p>
       <div className="flex items-center gap-3 mt-4">
@@ -71,6 +44,33 @@ const TestimonialCard = ({ name, title, image, message, rating, index }) => {
 };
 
 const Testimonial = () => {
+  const [testimonials, setTestimonials] = useState([]);
+  const [intro, setIntro] = useState({ titulo: '', subtitulo: '' });
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      const { data, error } = await supabase
+        .from('testimonial')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error) setTestimonials(data);
+    };
+
+    const fetchIntro = async () => {
+      const { data, error } = await supabase
+        .from('testimonial_intro')
+        .select('titulo, subtitulo')
+        .limit(1)
+        .single();
+
+      if (!error && data) setIntro(data);
+    };
+
+    fetchTestimonials();
+    fetchIntro();
+  }, []);
+
   return (
     <motion.div
       className="flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 pt-20 pb-30 text-center"
@@ -84,7 +84,7 @@ const Testimonial = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
       >
-        Opinião dos nossos clientes
+        {intro.titulo}
       </motion.h2>
 
       <motion.p
@@ -93,7 +93,7 @@ const Testimonial = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        Conheça as razões pelas quais a KentaCentro é a escolha de confiança de clientes em todo o país.
+        {intro.subtitulo}
       </motion.p>
 
       <motion.div
@@ -106,7 +106,7 @@ const Testimonial = () => {
         }}
       >
         {testimonials.map((testimonial, index) => (
-          <TestimonialCard key={index} index={index} {...testimonial} />
+          <TestimonialCard key={testimonial.id} index={index} {...testimonial} />
         ))}
       </motion.div>
     </motion.div>

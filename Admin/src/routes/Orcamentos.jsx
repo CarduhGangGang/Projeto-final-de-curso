@@ -125,11 +125,13 @@ function Orcamentos() {
                 />
               ))}
               <button
-                onClick={addOrcamento}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:opacity-90"
+              onClick={addOrcamento}
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:opacity-90"
               >
-                ➕ Adicionar
+                <span className="text-white text-lg">+</span>
+                <span>Adicionar</span>
               </button>
+
             </div>
           </div>
 

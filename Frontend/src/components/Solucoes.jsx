@@ -1,7 +1,7 @@
-import React from "react";
-import Businessman from "../assets/businessman-relaxing-office.jpg";
-import { Home, Headphones, Calculator } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { supabase } from "../../supabase-client";
+import * as LucideIcons from "lucide-react";
 
 const cardVariants = {
   hidden: { opacity: 0, scale: 0.9, y: 30 },
@@ -33,6 +33,33 @@ const initialVariants = {
 };
 
 const Solucoes = () => {
+  const [intro, setIntro] = useState({ titulo: "", subtitulo: "", img_url: "" });
+  const [solucoes, setSolucoes] = useState([]);
+
+  useEffect(() => {
+    const fetchIntro = async () => {
+      const { data, error } = await supabase
+        .from("solucoes_intro")
+        .select("titulo, subtitulo, img_url")
+        .limit(1)
+        .single();
+
+      if (!error && data) setIntro(data);
+    };
+
+    const fetchSolucoes = async () => {
+      const { data, error } = await supabase
+        .from("solucoes_home")
+        .select("*")
+        .order("ordem", { ascending: true });
+
+      if (!error && data) setSolucoes(data);
+    };
+
+    fetchIntro();
+    fetchSolucoes();
+  }, []);
+
   return (
     <section className="bg-white px-6 py-12 space-y-16">
       {/* Bloco inicial com animações */}
@@ -44,8 +71,8 @@ const Solucoes = () => {
           variants={initialVariants}
         >
           <img
-            src={Businessman}
-            alt="Homem relaxando no escritório com ar-condicionado"
+            src={intro.img_url || "https://via.placeholder.com/600x400"}
+            alt="Ilustração de soluções"
             className="rounded-lg shadow-lg w-full object-cover"
           />
         </motion.div>
@@ -57,52 +84,41 @@ const Solucoes = () => {
           variants={initialVariants}
         >
           <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4">
-            As melhores soluções de equipamentos técnicos de conforto para o seu
-            lar, local de trabalho ou de lazer.
+            {intro.titulo}
           </h2>
-          <p className="text-sm text-gray-500 mb-6">
-            As nossas propostas para o seu conforto diário
-          </p>
-          
+          <p className="text-sm text-gray-500">{intro.subtitulo}</p>
         </motion.div>
       </div>
 
-       {/* Cartões de serviço animados e responsivos */}
+      {/* Cartões dinâmicos a partir da tabela solucoes_home */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[ 
-          {
-            Icon: Home,
-            title: "Instalação",
-            description:
-              "Contamos com uma equipa com formação técnica especializada, e dedicada a identificar e a instalar as soluções mais eficazes para atender a cada uma das suas necessidades, seja em obra nova, ou em remodelação do mais simples ao mais complexo.",
-          },
-          {
-            Icon: Headphones,
-            title: "Assistência",
-            description:
-              "Fornecemos suporte técnico permanente dentro e fora de período de garantia, manutenção preventiva e reparação urgente em todos os sistemas técnicos instalados pela Kentacentro. Os nossos clientes têm sempre total prioridade.",
-          },
-          {
-            Icon: Calculator,
-            title: "Orçamentos",
-            description:
-              "Se procura auxílio na escolha dos produtos ou soluções ideais para os seus projetos e obras novas, ou de remodelação, solicite-nos uma proposta, e teremos todo o gosto em fornecer-lhe apoio e em preparar-lhe as melhores soluções.",
-          },
-        ].map(({ Icon, title, description }, index) => (
-          <motion.div
-            key={index}
-            className="bg-white rounded-2xl shadow-md p-6 text-center"
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            custom={index}
-          >
-            <Icon className="mx-auto text-black w-8 h-8 mb-4" />
-            <h3 className="text-lg font-semibold text-black mb-2">{title}</h3>
-            <p className="text-sm text-gray-700">{description}</p>
-          </motion.div>
-        ))}
+        {solucoes.map((s, index) => {
+          const Icon = LucideIcons[s.icone] || LucideIcons.CircleHelp;
+          return (
+            <motion.div
+              key={s.id}
+              className="bg-white rounded-2xl shadow-md p-6 text-center"
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              custom={index}
+            >
+              {s.image_url && (
+                <img
+                  src={s.image_url}
+                  alt={s.titulo}
+                  className="mx-auto mb-3 rounded w-16 h-16 object-cover"
+                />
+              )}
+              <Icon className="mx-auto text-black w-8 h-8 mb-4" />
+              <h3 className="text-lg font-semibold text-black mb-2">
+                {s.titulo}
+              </h3>
+              <p className="text-sm text-gray-700">{s.descricao}</p>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );

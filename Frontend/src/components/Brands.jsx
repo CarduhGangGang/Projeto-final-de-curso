@@ -1,21 +1,28 @@
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-
-const brands = [
-  { name: "LG", src: "/brands/lg.png" },
-  { name: "Daikin", src: "/brands/daikin.png" },
-  { name: "Fujitsu", src: "/brands/fujitsu.png" },
-  { name: "Samsung", src: "/brands/samsung.png" },
-];
+import { supabase } from "../../supabase-client"; 
 
 const Brands = () => {
+  const [brands, setBrands] = useState([]);
   const [initialAnimationPlayed, setInitialAnimationPlayed] = useState(false);
 
   useEffect(() => {
+    const fetchBrands = async () => {
+      const { data, error } = await supabase
+        .from("brands")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (!error && data) {
+        setBrands([...data, ...data]); // duplicar para loop de animação
+      } else {
+        console.error("Erro ao buscar marcas:", error);
+      }
+    };
+
+    fetchBrands();
     setInitialAnimationPlayed(true);
   }, []);
-
-  const allBrands = [...brands, ...brands]; // duplicar para loop
 
   return (
     <div className="relative overflow-hidden py-12 bg-white">
@@ -30,7 +37,7 @@ const Brands = () => {
           repeat: Infinity,
         }}
       >
-        {allBrands.map((brand, index) => {
+        {brands.map((brand, index) => {
           const name = brand.name.toLowerCase();
           let imageClass = "object-contain";
 
@@ -44,13 +51,13 @@ const Brands = () => {
 
           return (
             <motion.div
-              key={index}
+              key={brand.id || index}
               className="flex-shrink-0 w-36 h-20 sm:w-60 sm:h-24 flex items-center justify-center"
               initial={!initialAnimationPlayed ? { scale: 0.8, opacity: 0 } : false}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <img src={brand.src} alt={brand.name} className={imageClass} />
+              <img src={brand.image_url} alt={brand.name} className={imageClass} />
             </motion.div>
           );
         })}

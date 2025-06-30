@@ -43,7 +43,7 @@ const Notificacoes = () => {
               const nova = payload.new;
               if (!notifications.some((n) => n.id === nova.id)) {
                 setNotifications((prev) => [nova, ...prev]);
-                toast.info(`🔔 ${nova.mensagem}`);
+                toast.info(nova.mensagem); // <-- sem emoji
               }
             }
           )
@@ -160,7 +160,7 @@ const Notificacoes = () => {
         </div>
       </div>
 
-      {/* ✅ Modal de confirmação visual */}
+      {/* Modal de confirmação */}
       <Transition.Root show={showConfirmModal} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={setShowConfirmModal}>
           <Transition.Child

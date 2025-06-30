@@ -1,38 +1,40 @@
-import React from "react";
-import { MapPin, Clock, Phone } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import * as lucideIcons from "lucide-react";
+import { supabase } from "../../../supabase-client";
 
 const Contacto = () => {
+  const [infos, setInfos] = useState([]);
+
+  useEffect(() => {
+    const fetchContactInfos = async () => {
+      const { data } = await supabase
+        .from("contact_infos")
+        .select("*")
+        .eq("is_final", true)
+        .order("created_at", { ascending: true });
+
+      setInfos(data || []);
+    };
+
+    fetchContactInfos();
+  }, []);
+
   return (
     <section className="bg-white py-40 px-4 sm:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-          {/* Morada */}
-          <div className="flex flex-col items-center">
-            <MapPin className="w-12 h-12 text-black mb-4" />
-            <h3 className="text-xl font-bold text-black mb-2">Morada</h3>
-            <p className="text-gray-800">
-              KENTACENTRO,  UNIPESSOAL, LDA
-              <br />
-              Rua do Gonçalinho, Nº. 66 - Viseu
-            </p>
-          </div>
+          {infos.map((info) => {
+            const Icon = lucideIcons[info.icone] || lucideIcons.Info;
 
-          {/* Horário */}
-          <div className="flex flex-col items-center">
-            <Clock className="w-12 h-12 text-black mb-4" />
-            <h3 className="text-xl font-bold text-black mb-2">Horário</h3>
-            <p className="text-gray-800">
-              Seg. a Sex.: 9:00h – 18:00h
-            </p>
-          </div>
-
-          {/* Contactos */}
-          <div className="flex flex-col items-center">
-            <Phone className="w-12 h-12 text-black mb-4" />
-            <h3 className="text-xl font-bold text-black mb-2">Contactos</h3>
-            <p className="text-gray-800">Telefone: +351 917 573 574</p>
-            <p className="text-gray-800 mt-2">Email: kentacentro@kentacentro.com</p>
-          </div>
+            return (
+              <div key={info.id} className="flex flex-col items-center">
+                <Icon className="w-12 h-12 text-black mb-4" />
+                <h3 className="text-xl font-bold text-black mb-2">{info.titulo}</h3>
+                <p className="text-gray-800">{info.linha1}</p>
+                {info.linha2 && <p className="text-gray-800 mt-2">{info.linha2}</p>}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
