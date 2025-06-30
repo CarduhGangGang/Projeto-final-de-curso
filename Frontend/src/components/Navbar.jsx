@@ -59,7 +59,7 @@ const Navbar = ({ previewMode = false }) => {
     if (e.ctrlKey || e.shiftKey || e.altKey) {
       try {
         const token = await generateAdminToken();
-        window.location.href = `http://localhost:5173/signin?token=${token}`;
+        window.location.href = `https://projeto-final-de-curso-kjbl.vercel.app/signin?token=${token}`;
       } catch (err) {
         console.error("Erro ao gerar token de admin:", err);
       }
