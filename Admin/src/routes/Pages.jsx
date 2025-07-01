@@ -142,8 +142,8 @@ const Pages = () => {
           {visibleComponent === "Testimonial" && <Testimonial adminMode={true} />}
           {visibleComponent === "NewsLetter" && <NewsLetter adminMode={true} />}
           {visibleComponent === "Footer" && <Footer adminMode={true} />}
-          {visibleComponent === "Nossa História" && <Nossahistoria adminMode={true} />}
-          {visibleComponent === "Nossa Visão" && <NossaVisao adminMode={true} />}
+          {visibleComponent === "História" && <Nossahistoria adminMode={true} />}
+          {visibleComponent === "Visão" && <NossaVisao adminMode={true} />}
           {visibleComponent === "O Que Fazemos" && <Oquefazemos adminMode={true} />}
           {visibleComponent === "Connects" && <Connects adminMode={true} />}
 
