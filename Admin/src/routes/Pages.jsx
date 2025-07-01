@@ -14,7 +14,7 @@ import Brands from "../webPages/Home/Brands";
 import Separador from "../webPages/Home/Separador";
 import Solucoes from "../webPages/Home/Solucoes";
 import Testimonial from "../webPages/Home/Testimonial";
-import Newsletter from '../webPages/Home/Newsletter';
+import NewsLetter from '../webPages/Home/NewsLetter';
 import Footer from "../components/Footer";
 import Nossahistoria from "../webPages/Sobre/Nossahistoria";
 import NossaVisao from "../webPages/Sobre/NossaVisao";
@@ -140,7 +140,7 @@ const Pages = () => {
           {visibleComponent === "Separador" && <Separador adminMode={true} />}
           {visibleComponent === "Soluções" && <Solucoes adminMode={true} />}
           {visibleComponent === "Testimonial" && <Testimonial adminMode={true} />}
-          {visibleComponent === "Newsletter" && <Newsletter adminMode={true} />}
+          {visibleComponent === "NewsLetter" && <NewsLetter adminMode={true} />}
           {visibleComponent === "Footer" && <Footer adminMode={true} />}
           {visibleComponent === "Nossa História" && <Nossahistoria adminMode={true} />}
           {visibleComponent === "Nossa Visão" && <NossaVisao adminMode={true} />}

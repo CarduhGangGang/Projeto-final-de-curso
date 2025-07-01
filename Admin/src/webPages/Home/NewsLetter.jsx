@@ -9,7 +9,7 @@ const Title = ({ title, subTitle }) => (
   </div>
 );
 
-const Newsletter = ({ adminMode = false }) => {
+const NewsLetter = ({ adminMode = false }) => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(null);
   const [info, setInfo] = useState({ titulo: '', subtitulo: '' });
@@ -169,4 +169,4 @@ const Newsletter = ({ adminMode = false }) => {
   );
 };
 
-export default Newsletter;
+export default NewsLetter;
