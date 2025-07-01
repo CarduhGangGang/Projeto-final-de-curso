@@ -14,7 +14,7 @@ import Brands from "../webPages/Home/Brands";
 import Separador from "../webPages/Home/Separador";
 import Solucoes from "../webPages/Home/Solucoes";
 import Testimonial from "../webPages/Home/Testimonial";
-import Newsletter from "../webPages/Home/Newsletter";
+import Newsletter from '../webPages/Home/Newsletter';
 import Footer from "../components/Footer";
 import Nossahistoria from "../webPages/Sobre/Nossahistoria";
 import NossaVisao from "../webPages/Sobre/NossaVisao";
