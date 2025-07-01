@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { assets } from '../../assets/assets';
 import { supabase } from '../../../supabase-client';
 
@@ -16,6 +15,7 @@ const NewsLetter = ({ adminMode = false }) => {
   const [info, setInfo] = useState({ titulo: '', subtitulo: '' });
   const [editInfo, setEditInfo] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -27,6 +27,7 @@ const NewsLetter = ({ adminMode = false }) => {
         .single();
 
       if (!error && data) setInfo(data);
+      setLoading(false);
     };
 
     fetchInfo();
@@ -82,14 +83,17 @@ const NewsLetter = ({ adminMode = false }) => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-[200px] flex items-center justify-center text-gray-600 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-auto flex items-center justify-center px-4 py-8 bg-white">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2 }}
-        className="flex flex-col items-center w-full max-w-4xl bg-gray bg-opacity-90 px-6 py-8 text-black rounded-xl shadow-sm"
-      >
+      <div className="flex flex-col items-center w-full max-w-4xl bg-gray bg-opacity-90 px-6 py-8 text-black rounded-xl shadow-sm">
         {editInfo ? (
           <div className="w-full max-w-2xl mb-4 space-y-2">
             <input
@@ -160,7 +164,7 @@ const NewsLetter = ({ adminMode = false }) => {
         <p className="text-gray-400 mt-4 text-xs text-center max-w-md">
           Ao subscrever, estás a concordar com a nossa Política de Privacidade e a receber novidades por email.
         </p>
-      </motion.div>
+      </div>
     </div>
   );
 };

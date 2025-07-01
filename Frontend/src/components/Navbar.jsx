@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../supabase-client';
-import { generateAdminToken } from '../utils/token'; // <-- assegura que este utilitário existe
+import { generateAdminToken } from '../utils/token';
 
 const Navbar = ({ previewMode = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,16 +25,16 @@ const Navbar = ({ previewMode = false }) => {
         .select('logo_url')
         .eq('id', 1)
         .single();
-      if (data?.logo_url) {
-        setLogoUrl(data.logo_url);
-      }
+      if (data?.logo_url) setLogoUrl(data.logo_url);
     };
     fetchLogo();
   }, []);
 
   useEffect(() => {
     if (!previewMode) {
-      const handleScroll = () => setIsScrolled(window.scrollY > 10);
+      const handleScroll = () => {
+        setIsScrolled(window.scrollY > 10);
+      };
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
     }
@@ -59,7 +59,7 @@ const Navbar = ({ previewMode = false }) => {
     if (e.ctrlKey || e.shiftKey || e.altKey) {
       try {
         const token = await generateAdminToken();
-        window.location.href = `https://projeto-final-de-curso-kjbl.vercel.app/signin?token=${token}`;
+        window.location.href = `http://localhost:5173/signin?token=${token}`;
       } catch (err) {
         console.error("Erro ao gerar token de admin:", err);
       }
@@ -70,7 +70,11 @@ const Navbar = ({ previewMode = false }) => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur shadow-md py-3' : 'py-5'}`}>
+      <nav
+        className={`fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-16 lg:px-24 xl:px-32
+        transition-all duration-300 ease-in-out
+        ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-5'}`}
+      >
         {/* Logo */}
         <div
           className="flex items-center gap-2 cursor-pointer"
@@ -86,28 +90,26 @@ const Navbar = ({ previewMode = false }) => {
             <Link
               key={link.name}
               to={link.path}
-              className="hover:underline underline-offset-4"
+              className="hover:text-gray-700 hover:underline underline-offset-4 transition-colors duration-200"
             >
               {link.name}
             </Link>
           ))}
         </div>
 
-        {/* Hamburger Button */}
+        {/* Botão Hamburguer */}
         <button
           onClick={() => setIsMenuOpen(true)}
           className="md:hidden text-black"
           aria-label="Abrir menu"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2"
-            viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round"
-              d="M4 6h16M4 12h16M4 18h16" />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
       </nav>
 
-      {/* Menu Mobile */}
+      {/* Menu Mobile (sem animações de entrada) */}
       {isMenuOpen && (
         <div className="fixed top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center gap-8 text-xl text-black z-40">
           {navLinks.map((link) => (

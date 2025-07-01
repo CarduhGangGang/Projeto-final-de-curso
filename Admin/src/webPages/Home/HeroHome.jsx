@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase-client';
-import { motion } from 'framer-motion';
 
 const HeroHome = ({ adminMode = false }) => {
   const [heroes, setHeroes] = useState([]);
@@ -8,6 +7,7 @@ const HeroHome = ({ adminMode = false }) => {
   const [form, setForm] = useState({});
   const [editing, setEditing] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // Novo estado de loading
 
   useEffect(() => {
     const fetchHeroes = async () => {
@@ -23,11 +23,23 @@ const HeroHome = ({ adminMode = false }) => {
           setForm(data[0]);
         }
       }
+
+      setLoading(false); // Desativa loading após fetch
     };
+
     fetchHeroes();
   }, []);
 
   const currentHero = heroes.find(h => h.id === selectedHeroId);
+
+  // Mostrar enquanto carrega
+  if (loading || !currentHero) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px] text-gray-500 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -120,24 +132,13 @@ const HeroHome = ({ adminMode = false }) => {
     setTimeout(() => setNotification(null), 4000);
   };
 
-  if (!currentHero) return <div className="p-6">Nenhum conteúdo ainda.</div>;
-
-  const Wrapper = adminMode ? 'div' : motion.div;
-
   return (
     <div
       className="w-full min-h-screen overflow-auto bg-cover bg-center bg-no-repeat pt-12 pb-8"
       style={{ backgroundImage: `url(${currentHero.image_url})` }}
     >
       <div className="flex items-center justify-center w-full">
-        <Wrapper
-          className="w-full max-w-screen-md px-4 sm:px-6 md:px-8 flex flex-col items-center text-center lg:text-left lg:items-start"
-          {...(!adminMode && {
-            initial: { y: -60, opacity: 0 },
-            animate: { y: 0, opacity: 1 },
-            transition: { duration: 1, ease: 'easeOut' }
-          })}
-        >
+        <div className="w-full max-w-screen-md px-4 sm:px-6 md:px-8 flex flex-col items-center text-center lg:text-left lg:items-start">
           {editing ? (
             <div className="w-full bg-white/30 backdrop-blur-md p-4 rounded-lg shadow">
               <textarea name="title" value={form.title} onChange={handleChange} className="w-full text-sm p-2 rounded border mb-2" />
@@ -199,7 +200,7 @@ const HeroHome = ({ adminMode = false }) => {
               {notification.message}
             </div>
           )}
-        </Wrapper>
+        </div>
       </div>
     </div>
   );

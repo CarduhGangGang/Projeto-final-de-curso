@@ -10,9 +10,12 @@ const HeroContacto = () => {
   });
   const [editMode, setEditMode] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // 🆕 estado de carregamento
 
   useEffect(() => {
     const fetchHero = async () => {
+      setLoading(true); // 🆕 inicia carregamento
+
       const { data } = await supabase
         .from("herocontacto")
         .select("*")
@@ -27,6 +30,8 @@ const HeroContacto = () => {
           imagem_url: final.imagem_url || "",
         });
       }
+
+      setLoading(false); // 🆕 termina carregamento
     };
 
     fetchHero();
@@ -91,6 +96,14 @@ const HeroContacto = () => {
 
     setTimeout(() => setNotification(null), 3000);
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">

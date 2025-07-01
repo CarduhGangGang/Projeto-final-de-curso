@@ -13,6 +13,7 @@ const App = () => {
   const hideNavbarOnOwner = pathname.toLowerCase().startsWith('/owner');
 
   const [showRequestOrc, setShowRequestOrc] = useState(false);
+
   const openModal = () => setShowRequestOrc(true);
   const closeModal = () => setShowRequestOrc(false);
 
@@ -24,7 +25,6 @@ const App = () => {
 
       <main className="min-h-[70vh]">
         <Routes>
-          {/* Rotas públicas */}
           <Route path="/" element={<Home onRequestClick={openModal} />} />
           <Route path="/sobre" element={<SobrePage />} />
           <Route path="/contacto" element={<Contacto />} />

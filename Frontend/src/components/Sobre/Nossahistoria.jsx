@@ -27,9 +27,10 @@ const Nossahistoria = () => {
   return (
     <section className="bg-white px-6 py-16 md:py-24 text-center">
       <motion.div
-        className="max-w-4xl mx-auto text-center"
+        className="max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <p className="text-sm text-gray-500 mb-2">{historia.subtitulo}</p>

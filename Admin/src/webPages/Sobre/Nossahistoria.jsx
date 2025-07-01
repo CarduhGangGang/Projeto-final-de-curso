@@ -6,18 +6,21 @@ const Nossahistoria = ({ adminMode = true }) => {
   const [selected, setSelected] = useState(null);
   const [editing, setEditing] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // Novo estado de carregamento
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    setLoading(true);
     const { data } = await supabase.from('nossahistoria').select('*').order('created_at');
     if (data) {
       setHistorias(data);
       const final = data.find((h) => h.is_final);
       setSelected(final || data[0]);
     }
+    setLoading(false);
   };
 
   const handleChange = (e) => {
@@ -91,7 +94,13 @@ const Nossahistoria = ({ adminMode = true }) => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  if (!selected) return null;
+  if (loading || !selected) {
+    return (
+      <div className="min-h-[200px] flex items-center justify-center text-gray-600 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
   return (
     <section className="bg-white px-6 py-16 md:py-24">

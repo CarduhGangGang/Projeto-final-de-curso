@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "../../supabase-client"; 
+import { supabase } from "../../supabase-client";
 
 const Brands = () => {
   const [brands, setBrands] = useState([]);
-  const [initialAnimationPlayed, setInitialAnimationPlayed] = useState(false);
+  const [animationReady, setAnimationReady] = useState(false);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -14,15 +14,18 @@ const Brands = () => {
         .order("created_at", { ascending: true });
 
       if (!error && data) {
-        setBrands([...data, ...data]); // duplicar para loop de animação
+        // duplicar as marcas para o scroll infinito
+        setBrands([...data, ...data]);
+        setTimeout(() => setAnimationReady(true), 100); // pequena espera para preparar animações
       } else {
         console.error("Erro ao buscar marcas:", error);
       }
     };
 
     fetchBrands();
-    setInitialAnimationPlayed(true);
   }, []);
+
+  if (!brands.length) return null;
 
   return (
     <div className="relative overflow-hidden py-12 bg-white">
@@ -53,9 +56,9 @@ const Brands = () => {
             <motion.div
               key={brand.id || index}
               className="flex-shrink-0 w-36 h-20 sm:w-60 sm:h-24 flex items-center justify-center"
-              initial={!initialAnimationPlayed ? { scale: 0.8, opacity: 0 } : false}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={animationReady ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.6, delay: index * 0.05 }}
             >
               <img src={brand.image_url} alt={brand.name} className={imageClass} />
             </motion.div>

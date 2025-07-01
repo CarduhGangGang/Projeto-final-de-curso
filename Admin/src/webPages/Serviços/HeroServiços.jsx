@@ -10,10 +10,13 @@ const HeroServiços = () => {
   });
   const [editMode, setEditMode] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // ✅ NOVO
 
   useEffect(() => {
     const fetchHero = async () => {
-      const { data, error } = await supabase
+      setLoading(true); // ✅ INÍCIO DO CARREGAMENTO
+
+      const { data } = await supabase
         .from("heroservicos")
         .select("*")
         .order("created_at", { ascending: false });
@@ -27,6 +30,8 @@ const HeroServiços = () => {
           imagem_url: final.imagem_url || "",
         });
       }
+
+      setLoading(false); // ✅ FIM DO CARREGAMENTO
     };
 
     fetchHero();
@@ -92,9 +97,17 @@ const HeroServiços = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  // ✅ Mostrar "A carregar conteúdo..." enquanto busca dados
+  if (loading) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        A carregar conteúdo...
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
-
       {editMode ? (
         <div className="space-y-4">
           <input
@@ -134,7 +147,7 @@ const HeroServiços = () => {
             </button>
           </div>
         </div>
-      ) : heroData ? (
+      ) : heroData && (
         <div className="bg-gray-50 p-6 rounded-xl shadow flex flex-col md:flex-row gap-8 items-center justify-between">
           {/* IMAGEM */}
           <div className="w-full md:w-1/2 rounded-xl overflow-hidden shadow">
@@ -167,8 +180,6 @@ const HeroServiços = () => {
             </div>
           </div>
         </div>
-      ) : (
-        <p className="text-gray-500">Nenhum conteúdo disponível.</p>
       )}
 
       {notification && (

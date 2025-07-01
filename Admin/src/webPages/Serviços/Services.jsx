@@ -17,10 +17,15 @@ const Services = ({ adminMode = false }) => {
 
   const [header, setHeader] = useState({ title: "", subtitle: "" });
   const [editingHeader, setEditingHeader] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ NOVO ESTADO
 
   useEffect(() => {
-    fetchServices();
-    fetchHeader();
+    const loadData = async () => {
+      setLoading(true); // ✅ INÍCIO DO LOADING
+      await Promise.all([fetchServices(), fetchHeader()]);
+      setLoading(false); // ✅ FIM DO LOADING
+    };
+    loadData();
   }, []);
 
   const fetchServices = async () => {
@@ -93,6 +98,15 @@ const Services = ({ adminMode = false }) => {
     }
     setEditingHeader(false);
   };
+
+  // ✅ MOSTRAR LOADING
+  if (loading) {
+    return (
+      <div className="py-20 text-center text-gray-500">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen font-sans text-gray-700 px-4 sm:px-6 lg:px-32 py-12">

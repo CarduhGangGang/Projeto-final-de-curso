@@ -6,6 +6,7 @@ const Brands = ({ adminMode = false }) => {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({});
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -15,6 +16,7 @@ const Brands = ({ adminMode = false }) => {
         .order("created_at", { ascending: true });
 
       if (!error) setBrands(data);
+      setLoading(false);
     };
 
     fetchBrands();
@@ -49,18 +51,6 @@ const Brands = ({ adminMode = false }) => {
       setNotification({ id, type: "success", message: "Marca eliminada." });
     } else {
       setNotification({ id, type: "error", message: "Erro ao eliminar marca." });
-    }
-
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  const handleDeleteAll = async () => {
-    const { error } = await supabase.from("brands").delete().neq("id", 0); // Apaga todas
-    if (!error) {
-      setBrands([]);
-      setNotification({ id: null, type: "success", message: "Todas as marcas foram eliminadas!" });
-    } else {
-      setNotification({ id: null, type: "error", message: "Erro ao eliminar todas as marcas." });
     }
 
     setTimeout(() => setNotification(null), 3000);
@@ -122,17 +112,23 @@ const Brands = ({ adminMode = false }) => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  if (loading) {
+    return (
+      <div className="text-center py-8 text-gray-500">A carregar conteúdo...</div>
+    );
+  }
+
   return (
-    <div className="w-full bg-white py-4 px-2">
-      <div className="flex flex-wrap justify-center items-start gap-20">
+    <div className="w-full bg-white py-8 px-4">
+      <div className="flex flex-wrap justify-center items-center gap-12">
         {brands.map((brand) => (
           <div
             key={brand.id}
             id={`brand-${brand.id}`}
-            className="flex flex-col justify-between items-center min-h-[180px] w-[150px] pb-2"
+            className="flex flex-col items-center justify-between w-[160px] min-h-[160px]"
           >
             {editingId === brand.id ? (
-              <div className="flex flex-col gap-1 items-center w-full">
+              <div className="w-full flex flex-col gap-1 items-center">
                 <input
                   name="name"
                   value={form.name}
@@ -147,7 +143,7 @@ const Brands = ({ adminMode = false }) => {
                   className="text-sm border px-2 py-1 rounded w-full"
                   placeholder="URL da imagem"
                 />
-                <div className="flex gap-1 mt-1 flex-row">
+                <div className="flex gap-1 mt-1">
                   <button
                     onClick={handleSave}
                     className="bg-green-600 text-black text-[10px] px-2 py-0.5 rounded"
@@ -167,54 +163,45 @@ const Brands = ({ adminMode = false }) => {
                 <img
                   src={brand.image_url}
                   alt={brand.name}
-                  className={`object-contain mb-4 ${
-                    brand.name.toLowerCase() === "daikin"
-                      ? "w-[210px] h-[96px]"
-                      : brand.name.toLowerCase() === "lg"
-                      ? "w-[120px] h-[48px]"
-                      : "w-[140px] h-[56px]"
-                  }`}
+                  className="object-contain w-[120px] h-[60px] mb-2"
                 />
                 {adminMode && (
-                  <>
-                    <div className="flex gap-1 mt-1 flex-row items-center justify-center">
-                      <button
-                        onClick={() => {
-                          setEditingId(brand.id);
-                          setForm(brand);
-                        }}
-                        className="bg-white text-blue-600 border rounded px-1.5 py-0.5 text-[10px]"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        onClick={() => handleDelete(brand.id)}
-                        className="bg-white text-red-600 border rounded px-1.5 py-0.5 text-[10px]"
-                      >
-                        🗑️
-                      </button>
-                      <button
-                        onClick={() => setAsMainBrand(brand.id)}
-                        className={`bg-white border rounded px-1.5 py-0.5 text-[10px] ${
-                          brand.is_main ? "text-yellow-600 font-bold" : "text-yellow-500"
-                        }`}
-                      >
-                        ⭐
-                      </button>
-                    </div>
-
-                    {notification?.id === brand.id && (
-                      <div
-                        className={`mt-2 text-[13px] font-medium px-3 py-2 rounded text-center ${
-                          notification.type === "success"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {notification.message}
-                      </div>
-                    )}
-                  </>
+                  <div className="flex gap-1 mt-1 items-center justify-center">
+                    <button
+                      onClick={() => {
+                        setEditingId(brand.id);
+                        setForm(brand);
+                      }}
+                      className="bg-white text-blue-600 border rounded px-1.5 py-0.5 text-[10px]"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => handleDelete(brand.id)}
+                      className="bg-white text-red-600 border rounded px-1.5 py-0.5 text-[10px]"
+                    >
+                      🗑️
+                    </button>
+                    <button
+                      onClick={() => setAsMainBrand(brand.id)}
+                      className={`bg-white border rounded px-1.5 py-0.5 text-[10px] ${
+                        brand.is_main ? "text-yellow-600 font-bold" : "text-yellow-500"
+                      }`}
+                    >
+                      ⭐
+                    </button>
+                  </div>
+                )}
+                {notification?.id === brand.id && (
+                  <div
+                    className={`mt-1 text-[12px] text-center px-2 py-1 rounded ${
+                      notification.type === "success"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {notification.message}
+                  </div>
                 )}
               </>
             )}
@@ -222,20 +209,17 @@ const Brands = ({ adminMode = false }) => {
         ))}
       </div>
 
-      {/* Botões adicionais no modo admin */}
       {adminMode && (
-        <div className="flex flex-col items-center justify-center mt-6 gap-3">
+        <div className="flex flex-col items-center mt-6">
           <button
             onClick={handleCreate}
             className="bg-purple-600 hover:bg-purple-700 text-black px-3 py-1 text-[11px] rounded shadow"
           >
             ➕ Nova Marca
           </button>
-
-
           {notification && notification.id === null && (
             <div
-              className={`mt-1 text-[13px] font-medium px-3 py-2 rounded text-center ${
+              className={`mt-2 text-sm px-3 py-2 rounded ${
                 notification.type === "success"
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-700"

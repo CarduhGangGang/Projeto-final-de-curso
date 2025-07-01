@@ -22,26 +22,25 @@ const StarRating = ({ count }) => (
   </div>
 );
 
-const TestimonialCard = ({ name, title, image, message, rating, index }) => {
-  return (
-    <motion.div
-      className="w-80 flex flex-col items-start border border-gray-300 p-5 rounded-lg bg-white"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 * index, duration: 0.6, ease: 'easeOut' }}
-    >
-      <StarRating count={rating} />
-      <p className="text-sm mt-3 text-gray-500">{message}</p>
-      <div className="flex items-center gap-3 mt-4">
-        <img className="h-12 w-12 rounded-full" src={image} alt={name} />
-        <div>
-          <h2 className="text-lg text-gray-900 font-medium">{name}</h2>
-          <p className="text-sm text-gray-500">{title}</p>
-        </div>
+const TestimonialCard = ({ name, title, image, message, rating, index }) => (
+  <motion.div
+    className="w-80 flex flex-col items-start border border-gray-200 p-5 rounded-xl bg-white shadow-md"
+    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    viewport={{ once: true, amount: 0.2 }}
+    transition={{ duration: 0.6, delay: index * 0.1 }}
+  >
+    <StarRating count={rating} />
+    <p className="text-sm mt-3 text-gray-500 leading-relaxed">{message}</p>
+    <div className="flex items-center gap-3 mt-5">
+      <img className="h-12 w-12 rounded-full" src={image} alt={name} />
+      <div>
+        <h2 className="text-lg text-gray-900 font-semibold">{name}</h2>
+        <p className="text-sm text-gray-500">{title}</p>
       </div>
-    </motion.div>
-  );
-};
+    </div>
+  </motion.div>
+);
 
 const Testimonial = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -49,22 +48,20 @@ const Testimonial = () => {
 
   useEffect(() => {
     const fetchTestimonials = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('testimonial')
         .select('*')
         .order('created_at', { ascending: false });
-
-      if (!error) setTestimonials(data);
+      if (data) setTestimonials(data);
     };
 
     const fetchIntro = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('testimonial_intro')
         .select('titulo, subtitulo')
         .limit(1)
         .single();
-
-      if (!error && data) setIntro(data);
+      if (data) setIntro(data);
     };
 
     fetchTestimonials();
@@ -73,42 +70,37 @@ const Testimonial = () => {
 
   return (
     <motion.div
-      className="flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 pt-20 pb-30 text-center"
-      initial={{ opacity: 0, y: -50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
+      className="flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 pt-20 pb-28 text-center"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
     >
       <motion.h2
         className="text-3xl md:text-4xl font-bold text-gray-800"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
+        viewport={{ once: true }}
       >
         {intro.titulo}
       </motion.h2>
 
       <motion.p
         className="text-gray-600 mt-2 max-w-2xl"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
+        viewport={{ once: true }}
       >
         {intro.subtitulo}
       </motion.p>
 
-      <motion.div
-        className="flex flex-wrap justify-center gap-5 mt-10 text-left"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
-          hidden: { opacity: 0 },
-        }}
-      >
+      <div className="flex flex-wrap justify-center gap-6 mt-12 text-left">
         {testimonials.map((testimonial, index) => (
           <TestimonialCard key={testimonial.id} index={index} {...testimonial} />
         ))}
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

@@ -6,31 +6,31 @@ const Testimonial = () => {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [notification, setNotification] = useState(null);
-
   const [intro, setIntro] = useState({ titulo: '', subtitulo: '' });
   const [editIntro, setEditIntro] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTestimonials = async () => {
-      const { data } = await supabase
+    const fetchAll = async () => {
+      const { data: testiData } = await supabase
         .from('testimonial')
         .select('*')
         .order('ordem', { ascending: true });
-      setTestimonials(data);
-    };
 
-    const fetchIntro = async () => {
-      const { data } = await supabase
+      const { data: introData } = await supabase
         .from('testimonial_intro')
         .select('*')
         .order('created_at', { ascending: true })
         .limit(1)
         .single();
-      if (data) setIntro(data);
+
+      if (testiData) setTestimonials(testiData);
+      if (introData) setIntro(introData);
+
+      setLoading(false);
     };
 
-    fetchTestimonials();
-    fetchIntro();
+    fetchAll();
   }, []);
 
   const handleChange = (e) => {
@@ -50,16 +50,14 @@ const Testimonial = () => {
   const handleCreate = async () => {
     const { data, error } = await supabase
       .from('testimonial')
-      .insert([
-        {
-          name: 'Novo Cliente',
-          title: 'Cargo ou tipo de cliente',
-          message: 'Depoimento do cliente',
-          image: 'https://via.placeholder.com/80',
-          rating: 5,
-          ordem: testimonials.length + 1,
-        },
-      ])
+      .insert([{
+        name: 'Novo Cliente',
+        title: 'Cargo ou tipo de cliente',
+        message: 'Depoimento do cliente',
+        image: 'https://via.placeholder.com/80',
+        rating: 5,
+        ordem: testimonials.length + 1,
+      }])
       .select()
       .single();
 
@@ -111,6 +109,14 @@ const Testimonial = () => {
     }
     setTimeout(() => setNotification(null), 3000);
   };
+
+  if (loading || !intro) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center text-gray-600 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
   return (
     <section className="bg-[#f8fbfd] px-6 py-12 space-y-12">

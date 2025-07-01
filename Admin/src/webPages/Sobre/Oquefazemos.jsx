@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase-client';
-import { motion } from 'framer-motion';
 
 const Oquefazemos = () => {
   const [cards, setCards] = useState([]);
@@ -10,6 +9,7 @@ const Oquefazemos = () => {
   const [subtitulo, setSubtitulo] = useState('');
   const [tituloId, setTituloId] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,11 +28,14 @@ const Oquefazemos = () => {
         .from('oquefazemos')
         .select('*')
         .order('ordem');
+
       if (cardsData?.length) {
         setCards(cardsData);
         setSelectedId(cardsData[0].id);
         setForm(cardsData[0]);
       }
+
+      setLoading(false);
     };
     fetchData();
   }, []);
@@ -102,7 +105,17 @@ const Oquefazemos = () => {
     setTimeout(() => setNotification(null), 4000);
   };
 
-  if (!currentCard) return <div className="p-6">Nenhum card disponível.</div>;
+  if (loading) {
+    return (
+      <div className="p-6 text-center text-gray-600 text-sm min-h-[300px] flex items-center justify-center">
+        A carregar conteúdo...
+      </div>
+    );
+  }
+
+  if (!currentCard) {
+    return <div className="p-6 text-center text-gray-500">Nenhum card disponível.</div>;
+  }
 
   return (
     <section className="bg-gray-50 py-12 px-4 font-[Poppins]">
@@ -130,12 +143,8 @@ const Oquefazemos = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-10">
-          <motion.div
-            initial={{ x: -60, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="bg-white rounded-xl shadow p-4 space-y-2"
-          >
+          {/* Formulário */}
+          <div className="bg-white rounded-xl shadow p-4 space-y-2">
             <input
               name="img_url"
               value={form.img_url}
@@ -178,20 +187,16 @@ const Oquefazemos = () => {
                 ))}
               </select>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ x: 60, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="rounded-xl overflow-hidden shadow bg-white"
-          >
+          {/* Pré-visualização */}
+          <div className="rounded-xl overflow-hidden shadow bg-white">
             <img src={form.img_url} alt="Preview" className="w-full h-64 object-cover" />
             <div className="p-4">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">{form.title}</h3>
               <p className="text-gray-600 text-sm">{form.text}</p>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {notification && (

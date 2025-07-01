@@ -3,9 +3,14 @@ import { motion } from 'framer-motion';
 import RequestOrc from '../RequestOrc';
 import { supabase } from '../../../supabase-client';
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+const fadeLeft = {
+  hidden: { opacity: 0, x: -100 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: 'easeOut' } },
+};
+
+const fadeRight = {
+  hidden: { opacity: 0, x: 100 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: 'easeOut' } },
 };
 
 const Services = () => {
@@ -57,47 +62,53 @@ const Services = () => {
       </header>
 
       {/* Services */}
-      <main className="px-4 sm:px-6 md:px-10 lg:px-32 py-16 space-y-20 md:space-y-32">
-        {services.map((service, index) => (
-          <motion.section
-            key={service.id}
-            className={`flex flex-col md:flex-row ${
-              index % 2 !== 0 ? 'md:flex-row-reverse' : ''
-            } items-center gap-8 md:gap-20`}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={fadeInUp}
-          >
-            {/* Image */}
-            <div className="w-full md:w-1/2">
-              <img
-                src={service.image_url}
-                alt={service.title}
-                className="rounded-lg w-full max-h-[350px] object-cover shadow-md"
-              />
-            </div>
-
-            {/* Text Content */}
-            <div className="w-full md:w-1/2 text-justify">
-              <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900">
-                {service.title}
-              </h2>
-              <p className="mb-6 text-sm sm:text-base leading-relaxed">
-                {service.description}
-              </p>
-              <motion.button
-                onClick={handleOpenOrcamento}
-                className="inline-flex items-center gap-2 bg-gray-800 text-white px-5 py-2 rounded"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300 }}
+      <main className="px-4 sm:px-6 md:px-10 lg:px-32 py-16 space-y-24">
+        {services.map((service, index) => {
+          const isEven = index % 2 === 0;
+          return (
+            <div
+              key={service.id}
+              className={`flex flex-col md:flex-row ${!isEven ? 'md:flex-row-reverse' : ''} items-center gap-8 md:gap-20`}
+            >
+              {/* Image with animation */}
+              <motion.div
+                className="w-full md:w-1/2"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={isEven ? fadeLeft : fadeRight}
               >
-                Pedir Orçamento <span className="text-lg">→</span>
-              </motion.button>
+                <img
+                  src={service.image_url}
+                  alt={service.title}
+                  className="rounded-lg w-full max-h-[350px] object-cover shadow-md"
+                />
+              </motion.div>
+
+              {/* Text with animation */}
+              <motion.div
+                className="w-full md:w-1/2 text-justify"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={isEven ? fadeRight : fadeLeft}
+              >
+                <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-900">
+                  {service.title}
+                </h2>
+                <p className="mb-6 text-sm sm:text-base leading-relaxed">
+                  {service.description}
+                </p>
+                <button
+                  onClick={handleOpenOrcamento}
+                  className="bg-gray-800 text-white px-5 py-2 rounded hover:bg-gray-700 transition-colors"
+                >
+                  Pedir Orçamento →
+                </button>
+              </motion.div>
             </div>
-          </motion.section>
-        ))}
+          );
+        })}
       </main>
 
       {/* Modal do orçamento */}

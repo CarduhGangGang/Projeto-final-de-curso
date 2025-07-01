@@ -110,7 +110,7 @@ function Orcamentos() {
       <div className="flex-1 flex flex-col overflow-hidden ml-20 md:ml-0">
         <div className="flex-1 p-4 md:p-8 space-y-6">
 
-          <h1 className="text-3xl font-bold text-gray-800">📋 Gestão de Orçamentos</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Gestão de Orçamentos</h1>
 
           <div className="bg-white rounded-xl shadow-md p-4 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">

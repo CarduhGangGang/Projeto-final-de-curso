@@ -10,6 +10,7 @@ const HeroSobre = () => {
   });
   const [editMode, setEditMode] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true); // Estado de carregamento
 
   useEffect(() => {
     const fetchHero = async () => {
@@ -27,6 +28,8 @@ const HeroSobre = () => {
           imagem_url: final.imagem_url || "",
         });
       }
+
+      setLoading(false); // Finaliza o carregamento
     };
 
     fetchHero();
@@ -92,9 +95,16 @@ const HeroSobre = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-[200px] flex items-center justify-center text-gray-600 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
-
       {editMode ? (
         <div className="space-y-4">
           <input
@@ -134,7 +144,7 @@ const HeroSobre = () => {
             </button>
           </div>
         </div>
-      ) : heroData ? (
+      ) : heroData && (
         <div className="bg-gray-50 p-6 rounded-xl shadow flex flex-col md:flex-row gap-8 items-center justify-between">
           {/* IMAGEM */}
           <div className="w-full md:w-1/2 rounded-xl overflow-hidden shadow">
@@ -167,8 +177,6 @@ const HeroSobre = () => {
             </div>
           </div>
         </div>
-      ) : (
-        <p className="text-gray-500">Nenhum conteúdo disponível.</p>
       )}
 
       {notification && (

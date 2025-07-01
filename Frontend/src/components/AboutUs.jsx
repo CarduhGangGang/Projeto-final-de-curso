@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "../../supabase-client";
 import { motion } from "framer-motion";
-import { supabase } from "../../supabase-client"; // ajuste o caminho conforme o seu projeto
 
 const AboutUs = () => {
   const [aboutData, setAboutData] = useState(null);
@@ -24,50 +24,98 @@ const AboutUs = () => {
     fetchAbout();
   }, []);
 
-  if (!aboutData) {
-    return (
-      <section className="bg-gray-50 py-16 px-6 font-[Poppins]">
-        <div className="max-w-7xl mx-auto text-center text-gray-600">
-          Nenhum conteúdo ainda.
-        </div>
-      </section>
-    );
-  }
+  if (!aboutData) return null;
 
   return (
-    <section className="bg-gray-50 py-16 px-6 font-[Poppins]">
+    <section className="bg-gray-50 py-20 px-6 font-[Poppins]">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        {/* Left animation for image */}
+        {/* Imagem animada ao scroll */}
         <motion.div
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 3.8, ease: "easeInOut" }}
+          initial={{ opacity: 0, x: -100, scale: 0.9 }}
+          whileInView={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.3 }}
         >
           <img
             src={aboutData.image_url}
             alt="Imagem sobre"
-            className="w-full h-auto object-cover rounded-xl shadow"
+            className="w-full h-auto object-cover rounded-xl shadow-xl"
           />
         </motion.div>
 
-        {/* Right animation for text */}
+        {/* Texto com animações em scroll */}
         <motion.div
-          initial={{ x: 100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 1.8, ease: "easeInOut", delay: 0.3 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.25,
+              },
+            },
+            hidden: {},
+          }}
         >
-          <p className="text-sm uppercase text-gray-500 mb-2">{aboutData.title}</p>
-          <h2 className="text-4xl font-semibold text-gray-800 mb-2">{aboutData.subtitle}</h2>
-          <h3 className="text-5xl font-light text-gray-700 mb-6">Sobre Nós</h3>
-          <p className="text-gray-600 text-lg leading-relaxed mb-6">{aboutData.description}</p>
-
-          <Link
-            to="/sobre"
-            className="text-black tracking-widest font-medium inline-flex items-center group"
+          <motion.p
+            className="text-sm uppercase text-gray-500 mb-2"
+            variants={{
+              hidden: { opacity: 0, y: -20 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: 0.6 }}
           >
-            VER MAIS
-            <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
+            {aboutData.title}
+          </motion.p>
+
+          <motion.h2
+            className="text-4xl font-semibold text-gray-800 mb-2"
+            variants={{
+              hidden: { opacity: 0, x: 60 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            transition={{ duration: 0.7 }}
+          >
+            {aboutData.subtitle}
+          </motion.h2>
+
+          <motion.h3
+            className="text-5xl font-light text-gray-700 mb-6"
+            variants={{
+              hidden: { opacity: 0, x: -60 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            transition={{ duration: 0.7 }}
+          >
+            Sobre Nós
+          </motion.h3>
+
+          <motion.p
+            className="text-gray-600 text-lg leading-relaxed mb-6"
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: 0.8 }}
+          >
+            {aboutData.description}
+          </motion.p>
+
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, scale: 0.9 },
+              visible: { opacity: 1, scale: 1 },
+            }}
+            transition={{ duration: 0.6 }}
+          >
+            <Link
+              to="/sobre"
+              className="text-black tracking-widest font-medium inline-flex items-center group"
+            >
+              VER MAIS
+              <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     </section>

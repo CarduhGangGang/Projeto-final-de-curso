@@ -4,10 +4,16 @@ import { assets } from '../assets/assets';
 import { supabase } from '../../supabase-client.js';
 
 const Title = ({ title, subTitle }) => (
-  <div className="text-center mb-6">
+  <motion.div
+    className="text-center mb-6"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.5 }}
+    transition={{ duration: 0.6 }}
+  >
     <h2 className="text-4xl font-bold text-black">{title}</h2>
     <p className="text-gray-400 mt-2">{subTitle}</p>
-  </div>
+  </motion.div>
 );
 
 const NewsLetter = () => {
@@ -88,17 +94,22 @@ const NewsLetter = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1.2 }}
       className="flex items-center justify-center px-4 py-12"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
     >
       <div className="flex flex-col items-center w-full max-w-5xl rounded-2xl bg-gray bg-opacity-90 px-6 py-12 md:py-16 text-black">
         <Title title={info.titulo} subTitle={info.subtitulo} />
 
-        <form
+        <motion.form
           onSubmit={handleSubmit}
           className="flex flex-col md:flex-row items-center justify-center gap-4 mt-6 w-full max-w-3xl"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5 }}
         >
           <input
             type="email"
@@ -120,7 +131,7 @@ const NewsLetter = () => {
               className="w-3.5 filter brightness-0 invert group-hover:translate-x-1 transition-all"
             />
           </button>
-        </form>
+        </motion.form>
 
         {status === 'success' && (
           <p className="text-green-500 mt-4 text-sm">{info.mensagem_sucesso}</p>
@@ -129,9 +140,15 @@ const NewsLetter = () => {
           <p className="text-red-500 mt-4 text-sm">{info.mensagem_erro}</p>
         )}
 
-        <p className="text-gray-400 mt-6 text-xs text-center max-w-md">
+        <motion.p
+          className="text-gray-400 mt-6 text-xs text-center max-w-md"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
           {info.rodape}
-        </p>
+        </motion.p>
       </div>
     </motion.div>
   );

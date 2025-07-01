@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase-client';
-import { motion } from 'framer-motion';
 
 const NossaVisao = ({ adminMode = true }) => {
   const [visoes, setVisoes] = useState([]);
@@ -9,10 +8,17 @@ const NossaVisao = ({ adminMode = true }) => {
   const [editingTitulo, setEditingTitulo] = useState(false);
   const [tituloId, setTituloId] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [openIndex, setOpenIndex] = useState(null);
 
   useEffect(() => {
-    fetchTitulo();
-    fetchVisoes();
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchTitulo();
+      await fetchVisoes();
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   const fetchTitulo = async () => {
@@ -33,6 +39,7 @@ const NossaVisao = ({ adminMode = true }) => {
       .from('nossavisao')
       .select('*')
       .order('ordem');
+
     if (data) {
       setVisoes(data);
       setFormData(data);
@@ -48,13 +55,14 @@ const NossaVisao = ({ adminMode = true }) => {
   const handleNew = () => {
     const nova = {
       id: `temp-${Date.now()}`,
-      titulo: 'Novo Título',
-      conteudo: 'Novo conteúdo',
+      titulo: '',
+      conteudo: '',
       ordem: formData.length + 1,
       is_active: true,
-      isNew: true
+      isNew: true,
     };
     setFormData([...formData, nova]);
+    setOpenIndex(formData.length);
   };
 
   const handleDelete = (id) => {
@@ -90,14 +98,22 @@ const NossaVisao = ({ adminMode = true }) => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  const toggleAccordion = (index) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
+
   return (
-    <section className="py-24 px-6 sm:px-10 bg-gray-50">
-      <motion.div
-        className="w-full max-w-screen-2xl mx-auto"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-      >
+    <section className="min-h-screen w-full bg-gray-50 py-24 px-6 sm:px-10">
+      <div className="w-full">
+        {/* TÍTULO */}
         <div className="mb-12 text-center">
           {editingTitulo ? (
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
@@ -130,46 +146,64 @@ const NossaVisao = ({ adminMode = true }) => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* VISÕES (Acordeão em tela cheia) */}
+        <div className="space-y-4 w-full">
           {formData.map((item, index) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl shadow-md p-6"
+              className="bg-white rounded-xl shadow-md p-4 mx-auto"
             >
-              <input
-                value={item.titulo}
-                onChange={(e) => handleChange(index, 'titulo', e.target.value)}
-                className="w-full mb-2 px-4 py-2 border rounded font-semibold text-gray-800"
-                placeholder="Título"
-              />
-              <textarea
-                value={item.conteudo}
-                onChange={(e) => handleChange(index, 'conteudo', e.target.value)}
-                className="w-full px-4 py-2 border rounded text-gray-700"
-                rows={4}
-                placeholder="Conteúdo"
-              />
-              {adminMode && (
-                <div className="flex justify-end mt-2">
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="text-red-600 font-semibold text-sm"
-                  >
-                    🗑️ Eliminar
+              <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAccordion(index)}>
+                <input
+                  value={item.titulo}
+                  onChange={(e) => handleChange(index, 'titulo', e.target.value)}
+                  className="text-lg sm:text-xl font-semibold text-gray-900 w-full bg-transparent border-none focus:outline-none"
+                  placeholder="Título"
+                />
+                <div className="flex items-center gap-2">
+                  <button className="text-xl">
+                    {openIndex === index ? '▼' : '▶'}
                   </button>
+                  {adminMode && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(item.id);
+                      }}
+                      className="text-red-600 text-sm"
+                    >
+                      🗑️
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
+
+              {/* Conteúdo */}
+              <div
+                className={`transition-all duration-300 overflow-hidden ${
+                  openIndex === index ? 'max-h-[300px] mt-3' : 'max-h-0'
+                }`}
+              >
+                <textarea
+                  value={item.conteudo}
+                  onChange={(e) => handleChange(index, 'conteudo', e.target.value)}
+                  className="w-full px-3 py-2 border rounded text-gray-700 mt-2"
+                  rows={4}
+                  placeholder="Conteúdo"
+                />
+              </div>
             </div>
           ))}
         </div>
 
+        {/* ADMIN ACTIONS */}
         {adminMode && (
           <div className="flex flex-col items-center gap-4 mt-12">
             <button
               onClick={handleNew}
               className="text-purple-700 font-semibold hover:underline"
             >
-              ➕ Nova Visão
+              ➕ Novo
             </button>
 
             <button
@@ -184,7 +218,7 @@ const NossaVisao = ({ adminMode = true }) => {
         {notification && (
           <p className="mt-6 text-sm text-green-600 text-center">{notification}</p>
         )}
-      </motion.div>
+      </div>
     </section>
   );
 };

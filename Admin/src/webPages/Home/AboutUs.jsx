@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { supabase } from "../../../supabase-client"; // ajuste caminho se necessário
+import { supabase } from "../../../supabase-client";
 
 const AboutUs = () => {
   const [aboutItems, setAboutItems] = useState([]);
@@ -8,6 +7,7 @@ const AboutUs = () => {
   const [form, setForm] = useState({});
   const [editing, setEditing] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAboutUs = async () => {
@@ -15,6 +15,7 @@ const AboutUs = () => {
         .from("about_us")
         .select("*")
         .order("created_at", { ascending: false });
+
       if (data) {
         setAboutItems(data);
         if (data.length > 0) {
@@ -22,7 +23,10 @@ const AboutUs = () => {
           setForm(data[0]);
         }
       }
+
+      setIsLoading(false);
     };
+
     fetchAboutUs();
   }, []);
 
@@ -107,7 +111,9 @@ const AboutUs = () => {
 
     if (!clearError && !setError) {
       setNotification({ type: "success", message: "Guardado com sucesso!" });
-      setAboutItems(prev => prev.map(i => ({ ...i, is_main: i.id === currentItem.id })));
+      setAboutItems(prev =>
+        prev.map(i => ({ ...i, is_main: i.id === currentItem.id }))
+      );
     } else {
       setNotification({ type: "error", message: "Erro ao guardar." });
     }
@@ -115,30 +121,24 @@ const AboutUs = () => {
     setTimeout(() => setNotification(null), 4000);
   };
 
-  if (!currentItem) return <div className="p-6">Nenhum conteúdo ainda.</div>;
+  if (isLoading || !currentItem) {
+    return <div className="p-4 text-center text-gray-500">A carregar conteúdo...</div>;
+  }
 
   return (
     <section className="bg-gray-50 py-12 px-4 font-[Poppins]">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
         {/* Imagem */}
-        <motion.div
-          initial={{ x: -80, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 1.8, ease: "easeInOut" }}
-        >
+        <div>
           <img
             src={currentItem.image_url}
             alt="Imagem sobre"
             className="w-full h-auto object-cover rounded-xl shadow"
           />
-        </motion.div>
+        </div>
 
-        {/* Texto e edição */}
-        <motion.div
-          initial={{ x: 80, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 1.4, ease: "easeInOut" }}
-        >
+        {/* Texto */}
+        <div>
           {editing ? (
             <div className="bg-white/50 backdrop-blur p-4 rounded shadow-md space-y-2 text-sm">
               <input name="title" value={form.title} onChange={handleChange} className="w-full p-2 border rounded" />
@@ -194,7 +194,7 @@ const AboutUs = () => {
               {notification.message}
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

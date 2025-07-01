@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 
-const Separador = ({ adminMode = false }) => {
+const Separador = ({ adminMode = true }) => {
   const [registos, setRegistos] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({});
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,6 +17,8 @@ const Separador = ({ adminMode = false }) => {
 
       if (!error) setRegistos(data);
       else console.error("Erro ao carregar separador:", error.message);
+
+      setLoading(false);
     };
 
     fetchData();
@@ -86,6 +89,14 @@ const Separador = ({ adminMode = false }) => {
 
     setTimeout(() => setNotification(null), 3000);
   };
+
+  if (loading) {
+    return (
+      <div className="text-center py-10 text-gray-500 text-sm">
+        A carregar conteúdo...
+      </div>
+    );
+  }
 
   return (
     <section className="bg-gray-50 py-8 px-8 text-center w-full">
@@ -160,14 +171,27 @@ const Separador = ({ adminMode = false }) => {
         )}
 
         {adminMode && (
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={handleCreate}
-              className="text-sm bg-purple-600 text-black px-6 py-2 rounded hover:bg-purple-700 shadow"
-            >
-              ➕ Novo Separador
-            </button>
-          </div>
+          <>
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={handleCreate}
+                className="text-sm bg-purple-600 text-black px-6 py-2 rounded hover:bg-purple-700 shadow"
+              >
+                ➕ Novo Separador
+              </button>
+            </div>
+
+            {editingId && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={handleSave}
+                  className="text-sm bg-green-600 text-black px-6 py-2 rounded hover:bg-green-700 shadow"
+                >
+                  💾 Guardar Alterações
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {notification && (

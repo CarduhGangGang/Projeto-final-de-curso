@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase-client';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const Connects = ({ adminMode = true }) => {
   const [connect, setConnect] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchLink();
   }, []);
 
   const fetchLink = async () => {
+    setLoading(true);
     const { data } = await supabase
       .from('connects_links')
       .select('*')
@@ -21,6 +22,7 @@ const Connects = ({ adminMode = true }) => {
       .single();
 
     if (data) setConnect(data);
+    setLoading(false);
   };
 
   const handleChange = (field, val) => {
@@ -72,32 +74,28 @@ const Connects = ({ adminMode = true }) => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  if (loading) {
+    return (
+      <section className="py-20 px-4 text-center text-gray-500 text-lg">
+        A carregar conteúdo...
+      </section>
+    );
+  }
+
   if (!adminMode) {
     return (
       <section className="bg-white py-20 px-0 flex items-center justify-center">
         {connect && (
-          <motion.div
-            className="text-center cursor-pointer"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            whileHover={{ scale: 1.05 }}
-          >
+          <div className="text-center cursor-pointer">
             <Link to={connect.link_url} className="group">
-              <motion.div
-                className="text-4xl sm:text-5xl font-light text-gray-400 group-hover:text-gray-600 transition"
-                whileHover={{ y: -4 }}
-              >
+              <div className="text-4xl sm:text-5xl font-light text-gray-400 group-hover:text-gray-600 transition">
                 {connect.subtitulo}
-              </motion.div>
-              <motion.div
-                className="text-5xl sm:text-6xl font-bold text-gray-800 group-hover:text-black transition"
-                whileHover={{ y: 2 }}
-              >
+              </div>
+              <div className="text-5xl sm:text-6xl font-bold text-gray-800 group-hover:text-black transition">
                 {connect.titulo}
-              </motion.div>
+              </div>
             </Link>
-          </motion.div>
+          </div>
         )}
       </section>
     );
@@ -107,12 +105,7 @@ const Connects = ({ adminMode = true }) => {
     <section className="bg-gray-50 py-12 px-4 min-h-screen">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
         {/* Editor */}
-        <motion.div
-          initial={{ x: -60, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="bg-white border rounded-xl p-6 shadow space-y-4"
-        >
+        <div className="bg-white border rounded-xl p-6 shadow space-y-4">
           {connect ? (
             <>
               <input
@@ -161,32 +154,21 @@ const Connects = ({ adminMode = true }) => {
               <p className="text-center text-green-600 text-sm">{notification}</p>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Preview */}
-        <motion.div
-          initial={{ x: 60, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="bg-white border rounded-xl shadow flex items-center justify-center min-h-[300px]"
-        >
+        <div className="bg-white border rounded-xl shadow flex items-center justify-center min-h-[300px]">
           {connect && (
             <Link to={connect.link_url} className="group text-center">
-              <motion.div
-                className="text-4xl sm:text-5xl font-light text-gray-400 group-hover:text-gray-600 transition"
-                whileHover={{ y: -4 }}
-              >
+              <div className="text-4xl sm:text-5xl font-light text-gray-400 group-hover:text-gray-600 transition">
                 {connect.subtitulo}
-              </motion.div>
-              <motion.div
-                className="text-5xl sm:text-6xl font-bold text-gray-800 group-hover:text-black transition"
-                whileHover={{ y: 2 }}
-              >
+              </div>
+              <div className="text-5xl sm:text-6xl font-bold text-gray-800 group-hover:text-black transition">
                 {connect.titulo}
-              </motion.div>
+              </div>
             </Link>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

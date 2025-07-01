@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import {
+  Home,
+  Info,
+  Phone,
+  Hammer,
+} from "lucide-react"; // Ícones
+
 import Navbar from "../components/Navbar";
 import HeroHome from "../webPages/Home/HeroHome";
 import HeroSobre from "../webPages/Sobre/HeroSobre";
@@ -21,7 +28,7 @@ import Services from "../webPages/Serviços/Services";
 const cardData = [
   {
     title: "Home",
-    value: "\ud83c\udfe0",
+    icon: <Home className="w-10 h-10 text-blue-600" />,
     description: "Página inicial",
     dropdownItems: [
       "Navbar",
@@ -37,13 +44,13 @@ const cardData = [
   },
   {
     title: "Sobre",
-    value: "\u2139\ufe0f",
+    icon: <Info className="w-10 h-10 text-green-600" />,
     description: "Sobre Nós",
     dropdownItems: [
       "Navbar",
       "Hero Sobre",
-      "Nossa História",
-      "Nossa Visão",
+      "História",
+      "Visão",
       "O Que Fazemos",
       "Connects",
       "Footer",
@@ -51,13 +58,13 @@ const cardData = [
   },
   {
     title: "Contacto",
-    value: "\ud83d\udcde",
+    icon: <Phone className="w-10 h-10 text-red-500" />,
     description: "Contacte-nos",
     dropdownItems: ["Navbar", "Hero Contacto", "Contacto", "Footer"],
   },
   {
     title: "Serviços",
-    value: "\ud83c\udff0",
+    icon: <Hammer className="w-10 h-10 text-yellow-600" />,
     description: "Nossos Serviços",
     dropdownItems: ["Navbar", "Hero Serviços", "Services", "Footer"],
   },
@@ -89,10 +96,10 @@ const Pages = () => {
               key={index}
               className="relative bg-gray-100 rounded-2xl shadow-lg p-6 text-black transition duration-200 hover:scale-[1.02]"
             >
-              <div onClick={() => toggleDropdown(index)} className="cursor-pointer">
-                <h3 className="text-lg font-semibold mb-2">{card.title}</h3>
-                <p className="text-4xl font-bold">{card.value}</p>
-                <p className="text-sm mt-1">{card.description}</p>
+              <div onClick={() => toggleDropdown(index)} className="cursor-pointer space-y-2">
+                <div>{card.icon}</div>
+                <h3 className="text-lg font-semibold">{card.title}</h3>
+                <p className="text-sm text-gray-600">{card.description}</p>
               </div>
               {card.dropdownItems && activeDropdown === index && (
                 <ul className="absolute top-full left-0 mt-2 bg-white text-black rounded-xl shadow-lg w-full z-10 overflow-hidden">
@@ -140,16 +147,11 @@ const Pages = () => {
           {visibleComponent === "O Que Fazemos" && <Oquefazemos adminMode={true} />}
           {visibleComponent === "Connects" && <Connects adminMode={true} />}
 
-          {![
-            "Navbar", "Hero Home", "Hero Sobre", "Hero Contacto", "Contacto", "Hero Serviços",
-            "Services", "About Us", "Brands", "Separador", "Soluções", "Testimonial", "Newsletter", "Footer",
-            "Nossa História", "Nossa Visão", "O Que Fazemos", "Connects"
-          ].includes(visibleComponent) && (
+          {!cardData.some(c => c.dropdownItems.includes(visibleComponent)) && (
             <div className="w-full">
               <h2 className="text-xl font-semibold mb-4">
                 Componente "{visibleComponent}"
               </h2>
-              <p className="text-gray-600">Componente ainda não implementado.</p>
             </div>
           )}
         </div>
