@@ -45,7 +45,8 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     signOut();
-    window.location.href = "https://projeto-final-2-eight.vercel.app/";
+    const redirectUrl = import.meta.env.VITE_PUBLIC_URL || "/";
+    window.location.href = redirectUrl;
   };
 
   return (
