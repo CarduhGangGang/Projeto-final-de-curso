@@ -45,7 +45,7 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     signOut();
-    window.location.href = "http://localhost:3000";
+    window.location.href = "https://projeto-final-2-eight.vercel.app/";
   };
 
   return (
