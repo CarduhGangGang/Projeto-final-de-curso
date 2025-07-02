@@ -56,10 +56,12 @@ const Navbar = ({ previewMode = false }) => {
 
   const handleLogoClick = async (e) => {
     e.preventDefault();
+    const PROD_URL = "https://projeto-final-virid.vercel.app";
+
     if (e.ctrlKey || e.shiftKey || e.altKey) {
       try {
         const token = await generateAdminToken();
-        window.location.href = `http://localhost:5173/signin?token=${token}`;
+        window.location.href = `${PROD_URL}/signin?token=${token}`;
       } catch (err) {
         console.error("Erro ao gerar token de admin:", err);
       }
@@ -109,7 +111,7 @@ const Navbar = ({ previewMode = false }) => {
         </button>
       </nav>
 
-      {/* Menu Mobile (sem animações de entrada) */}
+      {/* Menu Mobile */}
       {isMenuOpen && (
         <div className="fixed top-0 left-0 w-full h-screen bg-white flex flex-col items-center justify-center gap-8 text-xl text-black z-40">
           {navLinks.map((link) => (

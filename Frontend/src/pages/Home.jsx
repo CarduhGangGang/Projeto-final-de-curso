@@ -9,16 +9,13 @@ import Testimonial from '../components/Testimonial';
 import NewsLetter from '../components/NewsLetter';
 import Footer from '../components/Footer';
 import RequestOrc from '../components/RequestOrc';
-
-// Caminho do logo
 import logo from '../assets/logo.svg';
 
-// ⚠️ Coloca aqui o token de admin (gerado externamente)
+// 🔐 Token fixo (gerado previamente com SignJWT)
 const ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTE0NDU4MDMsImV4cCI6MTc1MTQ0NjEwM30.JZ2XrLkyvM5K6952C65jWCovqRswRcmnPW9xT8O-Gjc";
 
-// ✅ URL de produção (opcionalmente usa variável de ambiente)
+// 🌍 URL de produção (altera se usares outro domínio)
 const PROD_URL = "https://projeto-final-virid.vercel.app";
-// const PROD_URL = import.meta.env.VITE_PROD_URL;
 
 function isAdmin() {
   try {
