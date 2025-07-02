@@ -10,8 +10,15 @@ import NewsLetter from '../components/NewsLetter';
 import Footer from '../components/Footer';
 import RequestOrc from '../components/RequestOrc';
 
-// Caminho do logo (ajusta conforme necessário)
-import logo from '../assets/logo.svg'; // ou logo.png
+// Caminho do logo
+import logo from '../assets/logo.svg';
+
+// ⚠️ Coloca aqui o token de admin (gerado externamente)
+const ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTE0NDU4MDMsImV4cCI6MTc1MTQ0NjEwM30.JZ2XrLkyvM5K6952C65jWCovqRswRcmnPW9xT8O-Gjc";
+
+// ✅ URL de produção (opcionalmente usa variável de ambiente)
+const PROD_URL = "https://projeto-final-virid.vercel.app";
+// const PROD_URL = import.meta.env.VITE_PROD_URL;
 
 function isAdmin() {
   try {
@@ -29,8 +36,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simula carregamento
-    const timeout = setTimeout(() => setLoading(false), 1200); // ou ajusta conforme
+    const timeout = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -45,8 +51,16 @@ const Home = () => {
 
       {isAdmin() && (
         <div style={{ margin: 20 }}>
-          <a href="http://localhost:5173/auth" target="_self">
-            <button style={{ padding: "10px 20px", background: "#1d4ed8", color: "#fff", borderRadius: "6px" }}>
+          <a
+            href={`${PROD_URL}/signin?token=${ADMIN_TOKEN}`}
+            target="_self"
+          >
+            <button style={{
+              padding: "10px 20px",
+              background: "#1d4ed8",
+              color: "#fff",
+              borderRadius: "6px"
+            }}>
               🔐 Acesso Administrativo
             </button>
           </a>
