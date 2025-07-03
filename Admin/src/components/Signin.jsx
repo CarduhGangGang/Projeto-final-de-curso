@@ -23,7 +23,7 @@ const Signin = () => {
 
       const result = await verifyToken(token);
       if (!result.valid) {
-        navigate("/unauthorized");
+        navigate("/dashboard");
       } else {
         setAuthorized(true);
       }
