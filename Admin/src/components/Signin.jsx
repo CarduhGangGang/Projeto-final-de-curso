@@ -71,18 +71,8 @@ const Signin = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
-            ADMIN
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-red-600 hover:text-red-800"
-            title="Sair"
-          >
-            <LogOut size={20} />
-            <span className="text-sm font-medium">Sair</span>
-          </button>
+        <div className="text-3xl font-extrabold text-gray-900 tracking-wide mb-6 text-center">
+          ADMIN
         </div>
 
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
@@ -128,6 +118,18 @@ const Signin = () => {
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
         </form>
+
+        {/* Botão Sair abaixo */}
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-red-600 hover:text-red-800"
+            title="Sair"
+          >
+            <LogOut size={20} />
+            <span className="text-sm font-medium">Sair</span>
+          </button>
+        </div>
       </div>
     </div>
   );
