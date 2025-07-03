@@ -33,7 +33,7 @@ const Signin = () => {
   };
 
   const handleSignOut = () => {
-    navigate(-1); // Volta para a página anterior
+    navigate(-1); // Voltar para a página anterior
   };
 
   return (
@@ -48,7 +48,16 @@ const Signin = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
-        <div className="flex justify-center mb-6">
+
+        {/* Botão SAIR no canto superior direito */}
+        <button
+          onClick={handleSignOut}
+          className="absolute top-4 right-4 bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition"
+        >
+          SAIR
+        </button>
+
+        <div className="flex justify-center mb-6 mt-4">
           <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
             ADMIN
           </div>
@@ -97,15 +106,6 @@ const Signin = () => {
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
         </form>
-
-        {/* Botão SAIR fora do formulário */}
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition mt-4"
-        >
-          SAIR
-        </button>
       </div>
     </div>
   );
