@@ -14,7 +14,7 @@ import Layout from "./components/Layout";
 import Unauthorized from "./components/Unauthorized";
 import Notificacoes from "./routes/Notificacoes";
 import Modal from "./routes/Modal";
-import Website from "./routes/Website"; // ✅ Nova rota que renderiza Navbar
+import Website from "./routes/Website"; 
 
 export const router = createBrowserRouter([
   { path: "/", element: <App /> },
