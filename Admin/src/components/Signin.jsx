@@ -23,7 +23,7 @@ const Signin = () => {
 
       const result = await verifyToken(token);
       if (!result.valid) {
-        navigate("/dashboard");
+        navigate("/unauthorized"); // 🔁 Corrigido para redirecionar token inválido
       } else {
         setAuthorized(true);
       }
@@ -44,7 +44,7 @@ const Signin = () => {
       if (signInError) {
         setError(signInError);
       } else {
-        navigate("/unauthorized");
+        navigate("/dashboard"); // ✅ Redirecionamento correto após login
       }
     } catch {
       setError("Erro inesperado ao entrar.");
