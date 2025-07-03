@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/Authcontext";
 import { verifyToken } from "../utils/auth";
 import backgroundImage from "../assets/construction-bg.jpg";
-import { LogOut } from "lucide-react";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ const Signin = () => {
   const [loading, setLoading] = useState(false);
 
   const auth = UserAuth();
-  const { signInUser, signOut } = auth || {};
+  const { signInUser } = auth || {};
 
   useEffect(() => {
     const verify = async () => {
@@ -32,9 +31,9 @@ const Signin = () => {
     verify();
   }, [navigate]);
 
+  // VOLTAR uma página para trás
   const handleLogout = () => {
-    signOut();
-    window.location.href = "http://localhost:3000";
+    navigate(-1);
   };
 
   const handleSignIn = async (e) => {
@@ -60,7 +59,7 @@ const Signin = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center bg-gray-200 relative px-4"
+      className="min-h-screen flex items-center justify-center bg-gray-200 relative px-4"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
@@ -69,7 +68,6 @@ const Signin = () => {
     >
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
-      {/* Card branco com o formulário */}
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
         <div className="flex justify-center mb-6">
           <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
@@ -112,6 +110,7 @@ const Signin = () => {
 
           {error && <p className="text-red-600 text-center mt-2">{error}</p>}
 
+          {/* Botão ENTRAR */}
           <button
             type="submit"
             disabled={loading}
@@ -119,18 +118,16 @@ const Signin = () => {
           >
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
-        </form>
-      </div>
 
-      {/* Botão SAIR fixo abaixo do card */}
-      <div className="mt-6 z-10">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-red-600 hover:text-red-800 font-medium bg-white bg-opacity-80 px-4 py-2 rounded-md shadow"
-        >
-          <LogOut size={20} />
-          <span>Sair</span>
-        </button>
+          {/* Botão SAIR (voltar) */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition"
+          >
+            SAIR
+          </button>
+        </form>
       </div>
     </div>
   );
