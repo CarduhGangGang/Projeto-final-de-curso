@@ -113,7 +113,7 @@ const Signin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+            className="mt-4 w-full bg-black text-black py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
