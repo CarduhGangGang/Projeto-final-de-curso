@@ -32,6 +32,10 @@ const Signin = () => {
     }
   };
 
+  const handleSignOut = () => {
+    navigate(-1); // Volta para a página anterior
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-gray-200 relative px-4"
@@ -88,9 +92,17 @@ const Signin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full bg-black text-black py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+            className="mt-4 w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Entrando..." : "ENTRAR"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition mt-2"
+          >
+            SAIR
           </button>
         </form>
       </div>
