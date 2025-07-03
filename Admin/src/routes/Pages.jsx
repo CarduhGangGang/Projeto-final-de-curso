@@ -38,7 +38,7 @@ const cardData = [
       "Separador",
       "Soluções",
       "Testimonial",
-      "Newsletter",
+      "NewsLetter",
       "Footer",
     ],
   },
