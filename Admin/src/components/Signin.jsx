@@ -96,15 +96,16 @@ const Signin = () => {
           >
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
-
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition mt-2"
-          >
-            SAIR
-          </button>
         </form>
+
+        {/* Botão SAIR fora do formulário */}
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition mt-4"
+        >
+          SAIR
+        </button>
       </div>
     </div>
   );
