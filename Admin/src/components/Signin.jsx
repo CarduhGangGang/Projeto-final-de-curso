@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/Authcontext";
 import { verifyToken } from "../utils/auth";
-import { LogOut } from "lucide-react";
 import backgroundImage from "../assets/construction-bg.jpg";
 
 const Signin = () => {
@@ -14,7 +13,7 @@ const Signin = () => {
   const [loading, setLoading] = useState(false);
 
   const auth = UserAuth();
-  const { signInUser, signOut } = auth || {};
+  const { signInUser } = auth || {};
 
   useEffect(() => {
     const verify = async () => {
@@ -23,7 +22,7 @@ const Signin = () => {
 
       const result = await verifyToken(token);
       if (!result.valid) {
-        navigate("/dashboard"); 
+        navigate("/unauthorized");
       } else {
         setAuthorized(true);
       }
@@ -32,6 +31,7 @@ const Signin = () => {
     verify();
   }, [navigate]);
 
+  // Espera até verificar o token
   if (!authorized) return null;
 
   const handleSignIn = async (e) => {
@@ -44,19 +44,13 @@ const Signin = () => {
       if (signInError) {
         setError(signInError);
       } else {
-        navigate("/dashboard"); 
+        navigate("/dashboard");
       }
     } catch {
       setError("Erro inesperado ao entrar.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    signOut();
-    const redirectUrl = import.meta.env.VITE_PUBLIC_URL || "/";
-    window.location.href = redirectUrl;
   };
 
   return (
@@ -71,8 +65,10 @@ const Signin = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
-        <div className="text-3xl font-extrabold text-gray-900 tracking-wide mb-6 text-center">
-          ADMIN
+        <div className="flex justify-center mb-6">
+          <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
+            ADMIN
+          </div>
         </div>
 
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
@@ -118,18 +114,6 @@ const Signin = () => {
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
         </form>
-
-        {/* Botão Sair abaixo */}
-        <div className="mt-6 flex justify-center">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-red-600 hover:text-red-800"
-            title="Sair"
-          >
-            <LogOut size={20} />
-            <span className="text-sm font-medium">Sair</span>
-          </button>
-        </div>
       </div>
     </div>
   );
