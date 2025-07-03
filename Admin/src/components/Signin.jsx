@@ -44,7 +44,7 @@ const Signin = () => {
       if (signInError) {
         setError(signInError);
       } else {
-        navigate("/dashboard");
+        navigate("/unauthorized");
       }
     } catch {
       setError("Erro inesperado ao entrar.");
