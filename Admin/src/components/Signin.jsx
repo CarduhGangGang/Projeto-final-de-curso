@@ -49,6 +49,14 @@ const Signin = () => {
 
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
 
+        {/* Botão SAIR no canto superior direito */}
+        <button
+          onClick={handleSignOut}
+          className="absolute top-4 right-4 bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition z-20"
+        >
+          SAIR
+        </button>
+
         <div className="flex justify-center mb-6 mt-4">
           <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
             ADMIN
@@ -98,15 +106,6 @@ const Signin = () => {
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
         </form>
-
-        {/* Botão SAIR no canto superior direito */}
-        <button
-          onClick={handleSignOut}
-          className="absolute top-4 right-4 bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition"
-        >
-          SAIR
-        </button>
-        
       </div>
     </div>
   );
