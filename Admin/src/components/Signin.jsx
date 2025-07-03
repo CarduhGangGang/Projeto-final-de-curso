@@ -45,14 +45,16 @@ const Signin = () => {
         backgroundPosition: "center",
       }}
     >
+      {/* overlay escuro */}
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
+      {/* card branco com conteúdo */}
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
 
         {/* Botão SAIR no canto superior direito */}
         <button
           onClick={handleSignOut}
-          className="absolute top-4 right-4 bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition z-20"
+          className="absolute top-4 right-4 z-50 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition"
         >
           SAIR
         </button>
