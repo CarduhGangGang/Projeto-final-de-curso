@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/Authcontext";
-import { verifyToken } from "../utils/auth";
 import backgroundImage from "../assets/construction-bg.jpg";
 
 const Signin = () => {
   const navigate = useNavigate();
-  const [authorized, setAuthorized] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,25 +12,6 @@ const Signin = () => {
 
   const auth = UserAuth();
   const { signInUser } = auth || {};
-
-  useEffect(() => {
-    const verify = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
-
-      const result = await verifyToken(token);
-      if (!result.valid) {
-        navigate("/unauthorized");
-      } else {
-        setAuthorized(true);
-      }
-    };
-
-    verify();
-  }, [navigate]);
-
-  // Espera até verificar o token
-  if (!authorized) return null;
 
   const handleSignIn = async (e) => {
     e.preventDefault();
