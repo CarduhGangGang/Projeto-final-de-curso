@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabase-client";
 import { motion, AnimatePresence } from "framer-motion";
+import ReCAPTCHA from "react-google-recaptcha"; // NOVO
 
-const RECAPTCHA_SITE_KEY = "6Ldd9XYrAAAAAADk5kpfbM2LcyL4xazVC6GNzf9c";
+const RECAPTCHA_SITE_KEY = "6LcEBHcrAAAAAKL8ew6xgOLOW2Qc8E3BGXl-UrQI";
 
 const RequestOrc = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const RequestOrc = ({ onClose }) => {
     detalhes: "",
   });
 
+  const [recaptchaToken, setRecaptchaToken] = useState(null); // NOVO
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
@@ -28,20 +30,13 @@ const RequestOrc = ({ onClose }) => {
     setIsSending(true);
     setSuccessMessage("");
 
+    if (!recaptchaToken) {
+      alert("Por favor confirme que não é um robô.");
+      setIsSending(false);
+      return;
+    }
+
     try {
-      // Verificar se o grecaptcha está carregado
-      if (!window.grecaptcha || !window.grecaptcha.execute) {
-        alert("O reCAPTCHA ainda não carregou. Tente novamente em alguns segundos.");
-        setIsSending(false);
-        return;
-      }
-
-      // Executar reCAPTCHA
-      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: "submit",
-      });
-
-      // Salvar no Supabase (opcional)
       const { error: dbError } = await supabase.from("orcamentos").insert([
         {
           nome: formData.nome,
@@ -59,7 +54,6 @@ const RequestOrc = ({ onClose }) => {
         return;
       }
 
-      // Chamar função Edge com o token
       const response = await fetch(
         "https://snsvmoozjvnlhkqazbbp.functions.supabase.co/send-orcamento-email",
         {
@@ -74,6 +68,7 @@ const RequestOrc = ({ onClose }) => {
 
       setSuccessMessage("Pedido de orçamento enviado com sucesso!");
       setFormData({ nome: "", email: "", contacto: "", tiposervico: "", detalhes: "" });
+      setRecaptchaToken(null); // Reseta token após envio
       setTimeout(onClose, 2500);
     } catch (err) {
       console.error(err);
@@ -136,7 +131,7 @@ const RequestOrc = ({ onClose }) => {
               ×
             </button>
 
-            <p className="text-xl font-semibold mb-8 text-center">
+            <p className="text-xl font-semibold mb-6 text-center">
               {modalConfig?.titulo || "Pedido de Orçamento"}
             </p>
 
@@ -187,19 +182,25 @@ const RequestOrc = ({ onClose }) => {
               </select>
             </div>
 
-            <div className="w-full mb-6">
+            <div className="w-full mb-4">
               <label className="block font-medium text-gray-600 mb-1">
                 {modalConfig?.label_detalhes || "Mais detalhes"}
               </label>
               <textarea
                 name="detalhes"
-                placeholder={
-                  modalConfig?.placeholder_detalhes || "Descreva o projeto"
-                }
+                placeholder={modalConfig?.placeholder_detalhes || "Descreva o projeto"}
                 className="border border-gray-300 rounded w-full px-2 py-1.5 h-24 resize-none text-sm"
                 required
                 value={formData.detalhes}
                 onChange={handleChange}
+              />
+            </div>
+
+            {/* reCAPTCHA v2 */}
+            <div className="mb-5">
+              <ReCAPTCHA
+                sitekey={RECAPTCHA_SITE_KEY}
+                onChange={(token) => setRecaptchaToken(token)}
               />
             </div>
 
