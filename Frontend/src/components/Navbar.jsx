@@ -56,7 +56,7 @@ const Navbar = ({ previewMode = false }) => {
 
   const handleLogoClick = async (e) => {
     e.preventDefault();
-    const PROD_URL = "https://projeto-final-virid.vercel.app";
+    const PROD_URL = "https://projeto-final-de-curso-ho67.vercel.app";
 
     if (e.ctrlKey || e.shiftKey || e.altKey) {
       try {
