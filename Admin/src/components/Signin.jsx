@@ -21,14 +21,17 @@ const Signin = () => {
       const token = params.get("token");
 
       const result = await verifyToken(token);
-      if (result.valid) {
+      if (!result.valid) {
+        navigate("/unauthorized");
+      } else {
         setAuthorized(true);
       }
     };
 
     verify();
-  }, []);
+  }, [navigate]);
 
+  // Espera até verificar o token
   if (!authorized) return null;
 
   const handleSignIn = async (e) => {
@@ -59,19 +62,8 @@ const Signin = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* ❌ Botão SAIR fora do container */}
-      <button
-        onClick={() => navigate(-1)}
-        className="absolute top-6 right-6 bg-white text-black px-3 py-1.5 rounded-full font-bold text-lg shadow hover:bg-gray-200 transition z-20"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
-
-      {/* Fundo escuro */}
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
-      {/* Container branco */}
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
         <div className="flex justify-center mb-6">
           <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
@@ -117,7 +109,7 @@ const Signin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+            className="mt-4 w-full bg-black text-black py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
