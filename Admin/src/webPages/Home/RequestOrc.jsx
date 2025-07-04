@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { supabase } from '../../supabase-client';
 
 const RequestOrc = ({ onClose }) => {
@@ -13,16 +14,27 @@ const RequestOrc = ({ onClose }) => {
   const [isSending, setIsSending] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [modalConfig, setModalConfig] = useState(null);
+  const [recaptchaToken, setRecaptchaToken] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
     setSuccessMessage('');
+
+    if (!recaptchaToken) {
+      alert("Por favor, verifique o reCAPTCHA.");
+      setIsSending(false);
+      return;
+    }
 
     const { error: dbError } = await supabase.from('orcamentos').insert([{
       nome: formData.nome,
@@ -43,7 +55,7 @@ const RequestOrc = ({ onClose }) => {
       await fetch("/functions/v1/send-orcamento-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, recaptchaToken }),
       });
     } catch (err) {
       console.error("Erro ao enviar email:", err);
@@ -57,6 +69,7 @@ const RequestOrc = ({ onClose }) => {
       tiposervico: '',
       detalhes: ''
     });
+    setRecaptchaToken('');
 
     setTimeout(onClose, 2500);
     setIsSending(false);
@@ -88,7 +101,7 @@ const RequestOrc = ({ onClose }) => {
         onSubmit={handleSubmit}
         className="flex bg-white rounded-xl max-w-4xl w-full max-md:mx-4 relative"
       >
-        {/* Imagem lateral (dinâmica) */}
+        {/* Imagem lateral */}
         {modalConfig?.imagem_url && (
           <img
             src={modalConfig.imagem_url}
@@ -108,12 +121,12 @@ const RequestOrc = ({ onClose }) => {
             ×
           </button>
 
-          {/* Título do modal */}
+          {/* Título */}
           <p className="text-xl font-semibold mb-8 text-center">
             {modalConfig?.titulo || 'Pedido de Orçamento'}
           </p>
 
-          {/* Mensagem de sucesso */}
+          {/* Sucesso */}
           {successMessage && (
             <div className="w-full mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-center">
               {successMessage}
@@ -158,7 +171,7 @@ const RequestOrc = ({ onClose }) => {
           </div>
 
           {/* Mais detalhes */}
-          <div className="w-full mb-6">
+          <div className="w-full mb-4">
             <label className="block font-medium text-gray-600 mb-1">
               {modalConfig?.label_detalhes || "Mais detalhes"}
             </label>
@@ -169,6 +182,14 @@ const RequestOrc = ({ onClose }) => {
               required
               value={formData.detalhes}
               onChange={handleChange}
+            />
+          </div>
+
+          {/* reCAPTCHA */}
+          <div className="w-full mb-4">
+            <ReCAPTCHA
+              sitekey="6Ldd9XYrAAAAAADk5kpfbM2LcyL4xazVC6GNzf9c"
+              onChange={handleRecaptchaChange}
             />
           </div>
 

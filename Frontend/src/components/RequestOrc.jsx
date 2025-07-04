@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabase-client';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// SITE KEY do reCAPTCHA v3
+const RECAPTCHA_SITE_KEY = '6Ldd9XYrAAAAAADk5kpfbM2LcyL4xazVC6GNzf9c';
+
 const RequestOrc = ({ onClose }) => {
   const [formData, setFormData] = useState({
     nome: '',
@@ -16,6 +19,17 @@ const RequestOrc = ({ onClose }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [modalConfig, setModalConfig] = useState(null);
 
+  // Carrega o script reCAPTCHA apenas uma vez
+  useEffect(() => {
+    if (!document.getElementById('recaptcha-script')) {
+      const script = document.createElement('script');
+      script.id = 'recaptcha-script';
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -26,34 +40,43 @@ const RequestOrc = ({ onClose }) => {
     setIsSending(true);
     setSuccessMessage('');
 
-    const { error: dbError } = await supabase.from('orcamentos').insert([{
-      nome: formData.nome,
-      email: formData.email,
-      contacto: formData.contacto,
-      tiposervico: formData.tiposervico,
-      detalhes: formData.detalhes,
-      file_url: null
-    }]);
-
-    if (dbError) {
-      alert('Erro ao guardar o pedido:\n' + dbError.message);
-      setIsSending(false);
-      return;
-    }
-
     try {
-      await fetch("/functions/v1/send-orcamento-email", {
+      // Executa reCAPTCHA e obtém token
+      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+        action: 'submit'
+      });
+
+      // Salva os dados no Supabase
+      const { error: dbError } = await supabase.from('orcamentos').insert([{
+        nome: formData.nome,
+        email: formData.email,
+        contacto: formData.contacto,
+        tiposervico: formData.tiposervico,
+        detalhes: formData.detalhes,
+        file_url: null
+      }]);
+
+      if (dbError) {
+        alert('Erro ao guardar o pedido:\n' + dbError.message);
+        setIsSending(false);
+        return;
+      }
+
+      // Chama Edge Function com o token reCAPTCHA
+      await fetch("https://snsvmoozjvnlhkqazbbp.functions.supabase.co/send-orcamento-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, recaptchaToken }),
       });
+
+      setSuccessMessage('Pedido de orçamento enviado com sucesso!');
+      setFormData({ nome: '', email: '', contacto: '', tiposervico: '', detalhes: '' });
+      setTimeout(onClose, 2500);
     } catch (err) {
-      console.error("Erro ao enviar email:", err);
+      console.error("Erro ao enviar:", err);
+      alert("Erro ao enviar pedido.");
     }
 
-    setSuccessMessage('Pedido de orçamento enviado com sucesso!');
-    setFormData({ nome: '', email: '', contacto: '', tiposervico: '', detalhes: '' });
-    setTimeout(onClose, 2500);
     setIsSending(false);
   };
 
@@ -90,7 +113,6 @@ const RequestOrc = ({ onClose }) => {
           onSubmit={handleSubmit}
           className="flex bg-white rounded-xl max-w-4xl w-full max-md:mx-4 relative"
         >
-          {/* Imagem lateral */}
           {modalConfig?.imagem_url && (
             <img
               src={modalConfig.imagem_url}
@@ -100,7 +122,6 @@ const RequestOrc = ({ onClose }) => {
           )}
 
           <div className="relative flex flex-col items-center justify-center w-full md:w-1/2 p-4 md:p-6 text-sm">
-            {/* Botão fechar */}
             <button
               type="button"
               onClick={onClose}
@@ -110,19 +131,16 @@ const RequestOrc = ({ onClose }) => {
               ×
             </button>
 
-            {/* Título */}
             <p className="text-xl font-semibold mb-8 text-center">
               {modalConfig?.titulo || 'Pedido de Orçamento'}
             </p>
 
-            {/* Sucesso */}
             {successMessage && (
               <div className="w-full mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-center">
                 {successMessage}
               </div>
             )}
 
-            {/* Campos nome, email, contacto */}
             {['nome', 'email', 'contacto'].map((field) => (
               <div key={field} className="w-full mb-4">
                 <label className="block font-medium text-gray-600 mb-1">
@@ -140,7 +158,6 @@ const RequestOrc = ({ onClose }) => {
               </div>
             ))}
 
-            {/* Tipo de serviço */}
             <div className="w-full mb-4">
               <label className="block font-medium text-gray-600 mb-1">
                 {modalConfig?.label_servico || "Tipo de Serviço"}
@@ -159,7 +176,6 @@ const RequestOrc = ({ onClose }) => {
               </select>
             </div>
 
-            {/* Detalhes */}
             <div className="w-full mb-6">
               <label className="block font-medium text-gray-600 mb-1">
                 {modalConfig?.label_detalhes || "Mais detalhes"}
@@ -174,7 +190,6 @@ const RequestOrc = ({ onClose }) => {
               />
             </div>
 
-            {/* Botão enviar */}
             <button
               type="submit"
               disabled={isSending}
