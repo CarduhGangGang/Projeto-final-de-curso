@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabase-client";
 import { motion, AnimatePresence } from "framer-motion";
-import ReCAPTCHA from "react-google-recaptcha"; // NOVO
+import ReCAPTCHA from "react-google-recaptcha";
 
-const RECAPTCHA_SITE_KEY = "6LeIBHcrAAAAADq9zEu4n-vFZLzEddn1FdLLrkgo";
+const RECAPTCHA_SITE_KEY = "6LfOCHcrAAAAAAvkz2Ul8ixu40bvLg8bshP3hcem"; // NOVA KEY
 
 const RequestOrc = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const RequestOrc = ({ onClose }) => {
     detalhes: "",
   });
 
-  const [recaptchaToken, setRecaptchaToken] = useState(null); // NOVO
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
@@ -37,23 +37,7 @@ const RequestOrc = ({ onClose }) => {
     }
 
     try {
-      const { error: dbError } = await supabase.from("orcamentos").insert([
-        {
-          nome: formData.nome,
-          email: formData.email,
-          contacto: formData.contacto,
-          tiposervico: formData.tiposervico,
-          detalhes: formData.detalhes,
-          file_url: null,
-        },
-      ]);
-
-      if (dbError) {
-        alert("Erro ao guardar o pedido:\n" + dbError.message);
-        setIsSending(false);
-        return;
-      }
-
+      // 1. Verifica o reCAPTCHA via função Edge
       const response = await fetch(
         "https://snsvmoozjvnlhkqazbbp.functions.supabase.co/send-orcamento-email",
         {
@@ -64,11 +48,28 @@ const RequestOrc = ({ onClose }) => {
       );
 
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Erro na função.");
+      if (!response.ok) throw new Error(result.error || "Erro na verificação reCAPTCHA.");
 
+      // 2. Se passou, insere o pedido no Supabase
+      const { error: dbError } = await supabase.from("orcamentos").insert([{
+        nome: formData.nome,
+        email: formData.email,
+        contacto: formData.contacto,
+        tiposervico: formData.tiposervico,
+        detalhes: formData.detalhes,
+        file_url: null,
+      }]);
+
+      if (dbError) {
+        alert("Erro ao guardar o pedido:\n" + dbError.message);
+        setIsSending(false);
+        return;
+      }
+
+      // Sucesso!
       setSuccessMessage("Pedido de orçamento enviado com sucesso!");
       setFormData({ nome: "", email: "", contacto: "", tiposervico: "", detalhes: "" });
-      setRecaptchaToken(null); // Reseta token após envio
+      setRecaptchaToken(null);
       setTimeout(onClose, 2500);
     } catch (err) {
       console.error(err);
@@ -196,7 +197,6 @@ const RequestOrc = ({ onClose }) => {
               />
             </div>
 
-            {/* reCAPTCHA v2 */}
             <div className="mb-5">
               <ReCAPTCHA
                 sitekey={RECAPTCHA_SITE_KEY}
