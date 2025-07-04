@@ -3,7 +3,7 @@ import { supabase } from "../../supabase-client";
 import { motion, AnimatePresence } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha"; // NOVO
 
-const RECAPTCHA_SITE_KEY = "6LcEBHcrAAAAAKL8ew6xgOLOW2Qc8E3BGXl-UrQI";
+const RECAPTCHA_SITE_KEY = "6LeIBHcrAAAAADq9zEu4n-vFZLzEddn1FdLLrkgo";
 
 const RequestOrc = ({ onClose }) => {
   const [formData, setFormData] = useState({
