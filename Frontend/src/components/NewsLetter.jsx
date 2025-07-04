@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { assets } from '../assets/assets';
 import { supabase } from '../../supabase-client.js';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+const RECAPTCHA_SITE_KEY = "6LdxD3crAAAAALiTdpaRdhFLBj9DJAltDRxAtgvB";
 
 const Title = ({ title, subTitle }) => (
   <motion.div
@@ -19,6 +22,7 @@ const Title = ({ title, subTitle }) => (
 const NewsLetter = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState(null);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [info, setInfo] = useState({
     titulo: '',
     subtitulo: '',
@@ -56,15 +60,22 @@ const NewsLetter = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus('loading');
 
     if (!email || !email.includes('@')) {
       alert('Por favor, insira um email válido.');
+      setStatus(null);
       return;
     }
 
-    setStatus('loading');
+    if (!recaptchaToken) {
+      alert('Por favor confirme que não é um robô.');
+      setStatus(null);
+      return;
+    }
 
     try {
+      // Verifica se já existe
       const { data: existing, error: fetchError } = await supabase
         .from('newsletter')
         .select('id')
@@ -75,9 +86,11 @@ const NewsLetter = () => {
       if (existing.length > 0) {
         setStatus('success');
         setEmail('');
+        setRecaptchaToken(null);
         return;
       }
 
+      // Insere novo
       const { error: insertError } = await supabase
         .from('newsletter')
         .insert([{ email }]);
@@ -86,6 +99,7 @@ const NewsLetter = () => {
 
       setStatus('success');
       setEmail('');
+      setRecaptchaToken(null);
     } catch (error) {
       console.error('Erro ao subscrever:', error);
       setStatus('error');
@@ -132,6 +146,13 @@ const NewsLetter = () => {
             />
           </button>
         </motion.form>
+
+        <div className="mt-4">
+          <ReCAPTCHA
+            sitekey={RECAPTCHA_SITE_KEY}
+            onChange={(token) => setRecaptchaToken(token)}
+          />
+        </div>
 
         {status === 'success' && (
           <p className="text-green-500 mt-4 text-sm">{info.mensagem_sucesso}</p>
