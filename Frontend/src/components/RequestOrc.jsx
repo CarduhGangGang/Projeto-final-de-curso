@@ -1,34 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../supabase-client';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { supabase } from "../../supabase-client";
+import { motion, AnimatePresence } from "framer-motion";
 
-// SITE KEY do reCAPTCHA v3
-const RECAPTCHA_SITE_KEY = '6Ldd9XYrAAAAAADk5kpfbM2LcyL4xazVC6GNzf9c';
+const RECAPTCHA_SITE_KEY = "6Ldd9XYrAAAAAADk5kpfbM2LcyL4xazVC6GNzf9c";
 
 const RequestOrc = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    contacto: '',
-    tiposervico: '',
-    detalhes: ''
+    nome: "",
+    email: "",
+    contacto: "",
+    tiposervico: "",
+    detalhes: "",
   });
 
   const [isSending, setIsSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
   const [modalConfig, setModalConfig] = useState(null);
-
-  // Carrega o script reCAPTCHA apenas uma vez
-  useEffect(() => {
-    if (!document.getElementById('recaptcha-script')) {
-      const script = document.createElement('script');
-      script.id = 'recaptcha-script';
-      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,42 +26,57 @@ const RequestOrc = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
-    setSuccessMessage('');
+    setSuccessMessage("");
 
     try {
-      // Executa reCAPTCHA e obtém token
-      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
-        action: 'submit'
-      });
-
-      // Salva os dados no Supabase
-      const { error: dbError } = await supabase.from('orcamentos').insert([{
-        nome: formData.nome,
-        email: formData.email,
-        contacto: formData.contacto,
-        tiposervico: formData.tiposervico,
-        detalhes: formData.detalhes,
-        file_url: null
-      }]);
-
-      if (dbError) {
-        alert('Erro ao guardar o pedido:\n' + dbError.message);
+      // Verificar se o grecaptcha está carregado
+      if (!window.grecaptcha || !window.grecaptcha.execute) {
+        alert("O reCAPTCHA ainda não carregou. Tente novamente em alguns segundos.");
         setIsSending(false);
         return;
       }
 
-      // Chama Edge Function com o token reCAPTCHA
-      await fetch("https://snsvmoozjvnlhkqazbbp.functions.supabase.co/send-orcamento-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, recaptchaToken }),
+      // Executar reCAPTCHA
+      const recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+        action: "submit",
       });
 
-      setSuccessMessage('Pedido de orçamento enviado com sucesso!');
-      setFormData({ nome: '', email: '', contacto: '', tiposervico: '', detalhes: '' });
+      // Salvar no Supabase (opcional)
+      const { error: dbError } = await supabase.from("orcamentos").insert([
+        {
+          nome: formData.nome,
+          email: formData.email,
+          contacto: formData.contacto,
+          tiposervico: formData.tiposervico,
+          detalhes: formData.detalhes,
+          file_url: null,
+        },
+      ]);
+
+      if (dbError) {
+        alert("Erro ao guardar o pedido:\n" + dbError.message);
+        setIsSending(false);
+        return;
+      }
+
+      // Chamar função Edge com o token
+      const response = await fetch(
+        "https://snsvmoozjvnlhkqazbbp.functions.supabase.co/send-orcamento-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...formData, recaptchaToken }),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Erro na função.");
+
+      setSuccessMessage("Pedido de orçamento enviado com sucesso!");
+      setFormData({ nome: "", email: "", contacto: "", tiposervico: "", detalhes: "" });
       setTimeout(onClose, 2500);
     } catch (err) {
-      console.error("Erro ao enviar:", err);
+      console.error(err);
       alert("Erro ao enviar pedido.");
     }
 
@@ -83,20 +86,22 @@ const RequestOrc = ({ onClose }) => {
   useEffect(() => {
     const fetchConfig = async () => {
       const { data, error } = await supabase
-        .from('modal_config')
-        .select('*')
-        .eq('ativo', true)
+        .from("modal_config")
+        .select("*")
+        .eq("ativo", true)
         .single();
 
       if (!error && data) setModalConfig(data);
-      else console.error('Erro ao buscar modal_config:', error);
+      else console.error("Erro ao buscar modal_config:", error);
 
       setLoading(false);
     };
 
     fetchConfig();
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = ''; };
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, []);
 
   if (loading) return null;
@@ -132,7 +137,7 @@ const RequestOrc = ({ onClose }) => {
             </button>
 
             <p className="text-xl font-semibold mb-8 text-center">
-              {modalConfig?.titulo || 'Pedido de Orçamento'}
+              {modalConfig?.titulo || "Pedido de Orçamento"}
             </p>
 
             {successMessage && (
@@ -141,15 +146,17 @@ const RequestOrc = ({ onClose }) => {
               </div>
             )}
 
-            {['nome', 'email', 'contacto'].map((field) => (
+            {["nome", "email", "contacto"].map((field) => (
               <div key={field} className="w-full mb-4">
                 <label className="block font-medium text-gray-600 mb-1">
                   {modalConfig?.[`label_${field}`] || field}
                 </label>
                 <input
                   name={field}
-                  type={field === 'email' ? 'email' : 'text'}
-                  placeholder={modalConfig?.[`placeholder_${field}`] || `Insira o seu ${field}`}
+                  type={field === "email" ? "email" : "text"}
+                  placeholder={
+                    modalConfig?.[`placeholder_${field}`] || `Insira o seu ${field}`
+                  }
                   className="border border-gray-300 rounded w-full px-2 py-1.5 text-sm"
                   required
                   value={formData[field]}
@@ -169,9 +176,13 @@ const RequestOrc = ({ onClose }) => {
                 value={formData.tiposervico}
                 onChange={handleChange}
               >
-                <option value="">{modalConfig?.placeholder_servico || "Selecione uma opção"}</option>
+                <option value="">
+                  {modalConfig?.placeholder_servico || "Selecione uma opção"}
+                </option>
                 {modalConfig?.servicos?.map((servico, i) => (
-                  <option key={i} value={servico}>{servico}</option>
+                  <option key={i} value={servico}>
+                    {servico}
+                  </option>
                 ))}
               </select>
             </div>
@@ -182,7 +193,9 @@ const RequestOrc = ({ onClose }) => {
               </label>
               <textarea
                 name="detalhes"
-                placeholder={modalConfig?.placeholder_detalhes || "Descreva o projeto"}
+                placeholder={
+                  modalConfig?.placeholder_detalhes || "Descreva o projeto"
+                }
                 className="border border-gray-300 rounded w-full px-2 py-1.5 h-24 resize-none text-sm"
                 required
                 value={formData.detalhes}
@@ -194,10 +207,10 @@ const RequestOrc = ({ onClose }) => {
               type="submit"
               disabled={isSending}
               className={`w-full text-white font-semibold rounded px-6 py-2 transition ${
-                isSending ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'
+                isSending ? "bg-gray-400 cursor-not-allowed" : "bg-black hover:bg-gray-800"
               }`}
             >
-              {isSending ? 'A Enviar...' : 'Enviar'}
+              {isSending ? "A Enviar..." : "Enviar"}
             </button>
           </div>
         </form>
