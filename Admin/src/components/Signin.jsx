@@ -21,20 +21,15 @@ const Signin = () => {
       const token = params.get("token");
 
       const result = await verifyToken(token);
-      if (!result.valid) {
-        navigate("/unauthorized");
-      } else {
+      if (result.valid) {
         setAuthorized(true);
       }
     };
 
     verify();
-  }, [navigate]);
+  }, []);
 
-  // VOLTAR uma página para trás
-  const handleLogout = () => {
-    navigate(-1);
-  };
+  if (!authorized) return null;
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -54,8 +49,6 @@ const Signin = () => {
       setLoading(false);
     }
   };
-
-  if (!authorized) return null;
 
   return (
     <div
@@ -110,7 +103,6 @@ const Signin = () => {
 
           {error && <p className="text-red-600 text-center mt-2">{error}</p>}
 
-          {/* Botão ENTRAR */}
           <button
             type="submit"
             disabled={loading}
@@ -119,11 +111,10 @@ const Signin = () => {
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
 
-          {/* Botão SAIR (voltar) */}
           <button
             type="button"
-            onClick={handleLogout}
-            className="w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition"
+            onClick={() => navigate(-1)}
+            className="w-full mt-2 bg-gray-300 text-gray-800 py-2 rounded-lg font-medium hover:bg-gray-400 transition"
           >
             SAIR
           </button>

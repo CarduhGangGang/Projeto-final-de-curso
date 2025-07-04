@@ -16,6 +16,19 @@ const RequestOrc = ({ onClose }) => {
   const [modalConfig, setModalConfig] = useState(null);
   const [recaptchaToken, setRecaptchaToken] = useState('');
 
+  // ✅ Força o carregamento do script reCAPTCHA no Vercel
+  useEffect(() => {
+    const scriptId = 'recaptcha-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `https://www.google.com/recaptcha/api.js`;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -52,7 +65,7 @@ const RequestOrc = ({ onClose }) => {
     }
 
     try {
-      await fetch("/functions/v1/send-orcamento-email", {
+      await fetch("https://snsvmoozjvnlhkqazbbp.functions.supabase.co/send-orcamento-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, recaptchaToken }),
@@ -70,7 +83,6 @@ const RequestOrc = ({ onClose }) => {
       detalhes: ''
     });
     setRecaptchaToken('');
-
     setTimeout(onClose, 2500);
     setIsSending(false);
   };
@@ -101,7 +113,6 @@ const RequestOrc = ({ onClose }) => {
         onSubmit={handleSubmit}
         className="flex bg-white rounded-xl max-w-4xl w-full max-md:mx-4 relative"
       >
-        {/* Imagem lateral */}
         {modalConfig?.imagem_url && (
           <img
             src={modalConfig.imagem_url}
@@ -111,29 +122,25 @@ const RequestOrc = ({ onClose }) => {
         )}
 
         <div className="relative flex flex-col items-center justify-center w-full md:w-1/2 p-4 md:p-6 text-sm">
-          {/* Botão de fechar */}
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl font-bold focus:outline-none"
+            className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl font-bold"
             aria-label="Fechar Modal"
           >
             ×
           </button>
 
-          {/* Título */}
           <p className="text-xl font-semibold mb-8 text-center">
             {modalConfig?.titulo || 'Pedido de Orçamento'}
           </p>
 
-          {/* Sucesso */}
           {successMessage && (
             <div className="w-full mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-center">
               {successMessage}
             </div>
           )}
 
-          {/* Campos Nome, Email, Contacto */}
           {['nome', 'email', 'contacto'].map((field) => (
             <div key={field} className="w-full mb-4">
               <label className="block font-medium text-gray-600 mb-1">
@@ -151,7 +158,6 @@ const RequestOrc = ({ onClose }) => {
             </div>
           ))}
 
-          {/* Tipo de Serviço */}
           <div className="w-full mb-4">
             <label className="block font-medium text-gray-600 mb-1">
               {modalConfig?.label_servico || "Tipo de Serviço"}
@@ -170,7 +176,6 @@ const RequestOrc = ({ onClose }) => {
             </select>
           </div>
 
-          {/* Mais detalhes */}
           <div className="w-full mb-4">
             <label className="block font-medium text-gray-600 mb-1">
               {modalConfig?.label_detalhes || "Mais detalhes"}
@@ -185,7 +190,6 @@ const RequestOrc = ({ onClose }) => {
             />
           </div>
 
-          {/* reCAPTCHA */}
           <div className="w-full mb-4">
             <ReCAPTCHA
               sitekey="6Ldd9XYrAAAAAADk5kpfbM2LcyL4xazVC6GNzf9c"
@@ -193,7 +197,6 @@ const RequestOrc = ({ onClose }) => {
             />
           </div>
 
-          {/* Botão Enviar */}
           <button
             type="submit"
             disabled={isSending}
