@@ -62,10 +62,18 @@ const Signin = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
 
       <div className="bg-white rounded-xl shadow-lg w-full max-w-lg p-12 min-h-[500px] relative z-10">
-        <div className="flex justify-center mb-6">
+        {/* Título e botão sair lado a lado */}
+        <div className="flex justify-between items-center mb-6">
           <div className="text-3xl font-extrabold text-gray-900 tracking-wide">
             ADMIN
           </div>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg font-medium hover:bg-gray-400 transition text-sm"
+          >
+            SAIR
+          </button>
         </div>
 
         <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
@@ -109,14 +117,6 @@ const Signin = () => {
             className="mt-4 w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Entrando..." : "ENTRAR"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="w-full mt-2 bg-gray-300 text-gray-800 py-2 rounded-lg font-medium hover:bg-gray-400 transition"
-          >
-            SAIR
           </button>
         </form>
       </div>
