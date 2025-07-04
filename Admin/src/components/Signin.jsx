@@ -59,12 +59,12 @@ const Signin = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* Botão Voltar fora do container */}
+      {/* Botão SAIR no canto superior direito sem background */}
       <button
         onClick={() => navigate(-1)}
-        className="absolute top-5 left-5 z-20 bg-white text-black px-4 py-2 rounded-lg font-medium shadow hover:bg-gray-100 transition"
+        className="absolute top-5 right-5 z-20 text-black text-sm font-semibold hover:underline transition"
       >
-        ← Voltar
+        SAIR ✕
       </button>
 
       <div className="absolute inset-0 bg-black opacity-50 z-0" />
@@ -114,7 +114,7 @@ const Signin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 w-full bg-black text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
+            className="mt-4 w-full bg-black text-black py-2 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Entrando..." : "ENTRAR"}
           </button>
